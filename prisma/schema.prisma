@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  PROCESSING
+}
+
+enum TransactionType {
+  DEPOSIT
+  DEDUCTION
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          Role      @default(USER)
+  balance       Float     @default(0.0)
+  image         String?
+  orders        Order[]
+  transactions  Transaction[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  serviceId       String
+  serviceName     String
+  externalOrderId String?
+  status          OrderStatus @default(PENDING)
+  amount          Float
+  basePrice       Float
+  markupPrice     Float
+  details         Json?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Transaction {
+  id        String          @id @default(cuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  amount    Float
+  type      TransactionType
+  status    String          @default("COMPLETED")
+  reference String?         @unique
+  createdAt DateTime        @default(now())
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
