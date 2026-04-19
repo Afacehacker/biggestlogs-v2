@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(price);
+  return "₦" + Number(price).toLocaleString("en-NG", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 }
 
 export function calculateMarkup(basePrice: number, markupPercentage: number = 500) {
