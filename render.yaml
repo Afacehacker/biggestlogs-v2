@@ -4,9 +4,8 @@ services:
     name: biggestlogs-backend
     env: node
     plan: free
-    # Changed: Running from root to ensure all workspace dependencies and lockfiles are resolved correctly
-    buildCommand: npm install && npx prisma generate --schema=backend/prisma/schema.prisma
-    startCommand: tsx backend/server/index.ts
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm run server
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -28,14 +27,13 @@ services:
     name: biggestlogs-frontend
     env: node
     plan: free
-    rootDir: frontend
     buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        sync: false # Set to your Render backend URL
       - key: DATABASE_URL
         sync: false
       - key: NEXTAUTH_URL
