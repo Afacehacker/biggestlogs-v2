@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
+import path from "path";
+
 const nextConfig: NextConfig = {
   turbopack: {
-    // Explicitly set root to this project directory to prevent Next.js from
-    // picking up C:\Users\HP\package-lock.json as the workspace root.
-    root: __dirname,
+    root: path.join(__dirname, ".."),
   },
   experimental: {
     turbopackFileSystemCacheForDev: false,
