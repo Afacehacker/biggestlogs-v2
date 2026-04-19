@@ -1,0 +1,42 @@
+services:
+  # Backend Service (Express)
+  - type: web
+    name: biggestlogs-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DATABASE_URL
+        fromValue: ${DATABASE_URL}
+      - key: JWT_SECRET
+        fromValue: ${JWT_SECRET}
+      - key: NEXTAUTH_SECRET
+        fromValue: ${NEXTAUTH_SECRET}
+      - key: TLOGS_API_KEY
+        fromValue: ${TLOGS_API_KEY}
+      - key: TLOGS_USER_ID
+        fromValue: ${TLOGS_USER_ID}
+      - key: VND_TO_NGN_RATE
+        fromValue: ${VND_TO_NGN_RATE}
+
+  # Frontend Service (Next.js)
+  - type: web
+    name: biggestlogs-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_API_URL
+        fromValue: ${NEXT_PUBLIC_API_URL} # Should be the Render backend URL
+      - key: DATABASE_URL
+        fromValue: ${DATABASE_URL}
+      - key: NEXTAUTH_URL
+        fromValue: ${NEXTAUTH_URL}
+      - key: NEXTAUTH_SECRET
+        fromValue: ${NEXTAUTH_SECRET}
