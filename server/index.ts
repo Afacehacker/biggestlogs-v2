@@ -418,7 +418,7 @@ app.post('/api/admin/users/update', authMiddleware, adminMiddleware, async (req:
 });
 
 app.delete('/api/admin/users/:id', authMiddleware, adminMiddleware, async (req: Request, res: Response) => {
-  await prisma.user.delete({ where: { id: req.params.id } });
+  await prisma.user.delete({ where: { id: req.params.id as string } });
   res.json({ message: "User deleted" });
 });
 
