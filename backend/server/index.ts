@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import prisma from './prisma.ts';
+import prisma from './prisma';
 import axios from 'axios';
 import multer from 'multer';
 import path from 'path';
