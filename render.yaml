@@ -27,13 +27,14 @@ services:
     name: biggestlogs-frontend
     env: node
     plan: free
-    buildCommand: npm install && npm run build
+    # Critical fix: Generating prisma client BEFORE building the next app
+    buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: NEXT_PUBLIC_API_URL
-        sync: false # Set to your Render backend URL
+        sync: false
       - key: DATABASE_URL
         sync: false
       - key: NEXTAUTH_URL
