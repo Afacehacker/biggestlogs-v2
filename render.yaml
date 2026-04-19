@@ -10,17 +10,17 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: DATABASE_URL
-        fromValue: ${DATABASE_URL}
+        sync: false
       - key: JWT_SECRET
-        fromValue: ${JWT_SECRET}
+        sync: false
       - key: NEXTAUTH_SECRET
-        fromValue: ${NEXTAUTH_SECRET}
+        sync: false
       - key: TLOGS_API_KEY
-        fromValue: ${TLOGS_API_KEY}
+        sync: false
       - key: TLOGS_USER_ID
-        fromValue: ${TLOGS_USER_ID}
+        sync: false
       - key: VND_TO_NGN_RATE
-        fromValue: ${VND_TO_NGN_RATE}
+        sync: false
 
   # Frontend Service (Next.js)
   - type: web
@@ -33,10 +33,10 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: NEXT_PUBLIC_API_URL
-        fromValue: ${NEXT_PUBLIC_API_URL} # Should be the Render backend URL
+        sync: false # Point this to your backend service URL
       - key: DATABASE_URL
-        fromValue: ${DATABASE_URL}
+        sync: false
       - key: NEXTAUTH_URL
-        fromValue: ${NEXTAUTH_URL}
+        sync: false
       - key: NEXTAUTH_SECRET
-        fromValue: ${NEXTAUTH_SECRET}
+        sync: false
