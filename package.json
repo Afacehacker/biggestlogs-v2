@@ -9,8 +9,7 @@
     "lint": "eslint",
     "server": "tsx server/index.ts",
     "server:dev": "nodemon --exec tsx server/index.ts",
-    "dev:all": "concurrently \"npm run dev\" \"npm run server:dev\"",
-    "postinstall": "prisma generate"
+    "dev:all": "concurrently \"npm run dev\" \"npm run server:dev\""
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
