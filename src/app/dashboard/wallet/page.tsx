@@ -88,15 +88,15 @@ export default function WalletPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-outfit">Financial Overview</h1>
-          <p className="text-secondary-foreground/60">Manage your funds and view transaction history.</p>
+          <h1 className="text-3xl font-bold font-outfit">Your Account Balance 💰</h1>
+          <p className="text-muted-foreground font-medium">Monitor your money sharp-sharp. No stories.</p>
         </div>
         <button 
           onClick={() => setShowDeposit(true)}
           className="flex items-center space-x-2 bg-primary px-6 py-3 rounded-xl text-primary-foreground font-bold hover:bg-primary/90 transition-all neon-glow"
         >
           <Plus className="h-5 w-5" />
-          <span>Deposit Funds</span>
+          <span>Add Money</span>
         </button>
       </div>
 
@@ -112,7 +112,7 @@ export default function WalletPage() {
               <Wallet className="h-32 w-32" />
             </div>
             
-            <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-2">Available Balance</p>
+            <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-2">My Balance</p>
             <h2 className="text-5xl font-bold font-mono mb-8">
               {formatPrice(data?.profile?.balance || 0)}
             </h2>
@@ -130,13 +130,13 @@ export default function WalletPage() {
           <div className="space-y-6">
             <h3 className="text-xl font-bold flex items-center gap-2 text-emerald-500">
               <ArrowDownCircle className="h-5 w-5" />
-              Deposit History
+              Recent Deposits
             </h3>
             
-            <div className="glass-dark rounded-2xl border border-white/10 overflow-hidden">
+            <div className="bg-card text-card-foreground shadow-sm rounded-2xl border border-border overflow-hidden">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-white/5 text-[10px] uppercase tracking-widest text-secondary-foreground/40 font-bold border-b border-white/5">
+                  <tr className="bg-muted/50 text-[10px] uppercase tracking-widest text-muted-foreground font-bold border-b border-border">
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4 text-right">Amount</th>
@@ -183,10 +183,10 @@ export default function WalletPage() {
               Purchase Activity
             </h3>
             
-            <div className="glass-dark rounded-2xl border border-white/10 overflow-hidden">
+            <div className="bg-card text-card-foreground shadow-sm rounded-2xl border border-border overflow-hidden">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-white/5 text-[10px] uppercase tracking-widest text-secondary-foreground/40 font-bold border-b border-white/5">
+                  <tr className="bg-muted/50 text-[10px] uppercase tracking-widest text-muted-foreground font-bold border-b border-border">
                     <th className="px-6 py-4">Activity</th>
                     <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4 text-right">Amount</th>
@@ -345,13 +345,12 @@ export default function WalletPage() {
                       <div className="pt-6">
                         <button 
                             onClick={handleDeposit}
-                            className="group relative w-full py-6 bg-primary text-primary-foreground font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden shadow-[0_20px_40px_rgba(var(--primary-rgb),0.4)]"
+                            className="group relative w-full py-6 bg-primary text-primary-foreground font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden shadow-lg"
                         >
                             <div className="relative z-10 flex items-center justify-center gap-4">
-                                Confirm Deposit
+                                I Don Pay (Submit)
                                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </div>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                         </button>
                       </div>
                     </div>

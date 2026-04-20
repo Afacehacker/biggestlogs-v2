@@ -25,11 +25,11 @@ import { API_BASE_URL, getApiHeaders } from "@/lib/api-config";
 import { ChatWidget } from "@/components/support/ChatWidget";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: ShoppingCart, label: "Marketplace", href: "/dashboard/marketplace" },
-  { icon: History, label: "Orders", href: "/dashboard/orders" },
-  { icon: Wallet, label: "Wallet", href: "/dashboard/wallet" },
-  { icon: Settings, label: "Profile", href: "/dashboard/profile" },
+  { icon: LayoutDashboard, label: "My Base 🏠", href: "/dashboard" },
+  { icon: ShoppingCart, label: "The Plug 🔌", href: "/dashboard/marketplace" },
+  { icon: History, label: "My Logs 📚", href: "/dashboard/orders" },
+  { icon: Wallet, label: "My Money 💰", href: "/dashboard/wallet" },
+  { icon: Settings, label: "Settings ⚙️", href: "/dashboard/profile" },
 ];
 
 const adminItems = [
@@ -80,7 +80,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-white/5 bg-black/40 backdrop-blur-xl transition-all duration-300 lg:static",
+          "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-card/60 backdrop-blur-xl transition-all duration-300 lg:static",
           isSidebarOpen ? "w-64" : "w-20 -translate-x-full lg:translate-x-0"
         )}
       >
@@ -113,7 +113,7 @@ export default function DashboardLayout({
 
           {session.user.role === "ADMIN" && (
             <div className="pt-8">
-              <p className={cn("px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-secondary-foreground/30", !isSidebarOpen && "lg:hidden")}>Staff Only</p>
+              <p className={cn("px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground", !isSidebarOpen && "lg:hidden")}>Admin Base (Oga only)</p>
               {adminItems.map((item) => (
                 <Link
                   key={item.href}
@@ -133,7 +133,7 @@ export default function DashboardLayout({
           )}
         </nav>
 
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-border">
           <button
             onClick={() => signOut()}
             className={cn(
@@ -150,7 +150,7 @@ export default function DashboardLayout({
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Top bar */}
-        <header className="h-16 border-b border-white/5 bg-black/20 backdrop-blur-md flex items-center justify-between px-4 lg:px-8">
+        <header className="h-16 border-b border-border bg-background/60 backdrop-blur-md flex items-center justify-between px-4 lg:px-8">
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -166,9 +166,9 @@ export default function DashboardLayout({
           <div className="flex items-center space-x-4">
             <Link href="/dashboard/wallet" className="hidden sm:flex flex-col items-end mr-2 hover:opacity-80 transition-opacity">
               <span className="text-sm font-bold text-primary">{formatPrice(profile?.balance || 0)}</span>
-              <span className="text-[10px] text-secondary-foreground/40 font-mono">WALLET BALANCE</span>
+              <span className="text-[10px] text-muted-foreground font-mono">MY BALANCE</span>
             </Link>
-            <div className="flex items-center space-x-2 bg-white/5 rounded-full px-4 py-2 border border-white/10">
+            <div className="flex items-center space-x-2 bg-muted rounded-full px-4 py-2 border border-border">
               <UserCircle className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium hidden sm:inline">{session.user.name}</span>
             </div>

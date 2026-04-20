@@ -49,13 +49,13 @@ export const Navbar = () => {
   });
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-lg">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/50 backdrop-blur-lg">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <span className="text-2xl font-bold tracking-tighter text-primary">
-                BIGGEST<span className="text-foreground">LOGS</span>V2
+                BIGGEST<span className="text-foreground">LOGS</span> ⚡
               </span>
             </Link>
           </div>
@@ -75,7 +75,7 @@ export const Navbar = () => {
             <div className="ml-4 flex items-center md:ml-6 space-x-4">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-secondary-foreground"
+                className="p-2 rounded-xl bg-muted border border-border hover:bg-muted/80 transition-all text-foreground"
               >
                 {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
@@ -100,10 +100,10 @@ export const Navbar = () => {
                   </Link>
                   <button
                     onClick={() => signOut()}
-                    className="flex items-center space-x-2 text-sm font-medium text-red-500 hover:text-red-400 transition-colors"
+                    className="flex items-center space-x-2 text-sm font-bold text-red-500 hover:text-red-400 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>Logout</span>
+                    <span>Waka Away</span>
                   </button>
                 </>
               ) : (
@@ -138,7 +138,7 @@ export const Navbar = () => {
                 className="flex items-center space-x-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20"
               >
                 <Wallet className="h-4 w-4 text-primary" />
-                <span className="text-sm font-bold text-primary">
+                <span className="text-xs font-bold text-primary">
                   {formatPrice(profile?.balance || 0)}
                 </span>
               </Link>
@@ -169,7 +169,7 @@ export const Navbar = () => {
                 <Link href="/dashboard/wallet" className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20 mb-2" onClick={() => setIsOpen(false)}>
                   <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-primary" />
-                    <span className="font-bold text-primary">Wallet Balance</span>
+                    <span className="font-bold text-primary">My Money</span>
                   </div>
                   <span className="font-mono font-bold text-primary">{formatPrice(profile?.balance || 0)}</span>
                 </Link>

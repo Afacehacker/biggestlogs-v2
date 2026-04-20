@@ -126,18 +126,87 @@ app.get('/api/user/transactions', authMiddleware, async (req: any, res) => {
 app.post('/api/orders', authMiddleware, async (req: any, res) => {
   try {
     const { serviceId } = req.body;
-    // Mock implementation for placing an order
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "Omo, we can't find your profile oh!" });
+
+    // 1. Fetch products to get the latest price and check stock
+    const TLOGS_API_KEY = process.env.TLOGS_API_KEY;
+    const tlogsApi = axios.create({ baseURL: process.env.TLOGS_BASE_URL || "https://tlogsmarketplace.com/api" });
+    const { data: productsData } = await tlogsApi.get(`/products.php?api_key=${TLOGS_API_KEY}`);
+    
+    let targetProduct: any = null;
+    if (productsData.categories) {
+      productsData.categories.forEach((cat: any) => {
+        if (cat.products) {
+          const found = cat.products.find((p: any) => String(p.id || p.product_id) === String(serviceId));
+          if (found) targetProduct = { ...found, category_name: cat.name };
+        }
+      });
+    }
+
+    if (!targetProduct) return res.status(404).json({ message: "This log don finish or e no dey again!" });
+    
+    const { markupMultiplier, conversionRate } = await getPricingConfig();
+    const basePrice = parseFloat(targetProduct.price || 0) * conversionRate;
+    const finalPrice = Math.ceil(basePrice * markupMultiplier);
+    const stockAvailable = parseInt(targetProduct.amount || 0);
+
+    if (stockAvailable <= 0) return res.status(400).json({ message: "Stock don finish! Wait make we restock." });
+
+    // 2. Check Balance
+    if (user.balance < finalPrice) {
+      return res.status(400).json({ 
+        message: `Insufficient funds! You need ₦${finalPrice.toLocaleString()}, but your balance na ₦${user.balance.toLocaleString()}. Abeg top up your wallet!` 
+      });
+    }
+
+    // 3. Call TLogs API to buy the product
+    const formData = new URLSearchParams();
+    formData.append("action", "buyProduct");
+    formData.append("id", serviceId);
+    formData.append("amount", "1");
+    formData.append("api_key", TLOGS_API_KEY as string);
+
+    // Some APIs use buy_product.php, others use buy_product
+    // Based on common patterns in these types of sites
+    const buyRes = await tlogsApi.post("/buy_product.php", formData, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
+
+    if (buyRes.data?.status !== "success") {
+      console.error("TLOGS_BUY_ERR:", buyRes.data);
+      return res.status(500).json({ 
+        message: "Network issue from source! Abeg try again small time or contact support.",
+        details: buyRes.data?.msg 
+      });
+    }
+
+    const itemDetails = buyRes.data.data || buyRes.data.details || buyRes.data.msg;
+
+    // 4. Deduct Balance and Save Transaction
+    user.balance -= finalPrice;
+    await user.save();
+
     const order = new Transaction({
-      user: req.user._id,
-      amount: 0, // Should be fetched from service
+      user: user._id,
+      amount: finalPrice,
       type: 'purchase',
-      status: 'pending',
-      description: `Order for service ${serviceId}`,
+      status: 'completed',
+      description: `Purchase: ${targetProduct.name}`,
     });
     await order.save();
-    res.json({ message: "Order placed successfully", order });
-  } catch (error) {
-    res.status(500).json({ message: 'Error placing order' });
+
+    res.json({ 
+      message: "Correct! Purchase successful! No stories.", 
+      order: { 
+        ...order.toObject(), 
+        details: itemDetails 
+      } 
+    });
+
+  } catch (error: any) {
+    console.error("ORDER_ERR:", error.message);
+    res.status(500).json({ message: 'Error placing order. Network or Server issues.', details: error.message });
   }
 });
 

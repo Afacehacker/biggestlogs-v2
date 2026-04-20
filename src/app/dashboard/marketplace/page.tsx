@@ -83,32 +83,32 @@ export default function MarketplacePage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-outfit text-primary">Marketplace</h1>
-          <p className="text-secondary-foreground/60">Purchase premium logs and accounts with instant delivery.</p>
+          <h1 className="text-3xl font-bold font-outfit text-primary">The Plug 🔌</h1>
+          <p className="text-muted-foreground font-medium">Get your authentic logs fast-fast and sharp. No stories.</p>
         </div>
       </div>
 
       {/* Filters & Search */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
           <input
             type="text"
             placeholder="Search for services, accounts, or logs..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium"
+            className="w-full bg-card border border-border rounded-xl py-4 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-medium text-foreground"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/30" />
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50" />
           <select
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer font-medium"
+            className="w-full bg-card border border-border rounded-xl py-4 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer font-medium text-foreground"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             {categories.map((cat: any) => (
-              <option key={cat} value={cat} className="bg-slate-900">{cat}</option>
+              <option key={cat} value={cat} className="bg-background text-foreground">{cat}</option>
             ))}
           </select>
         </div>
@@ -139,7 +139,7 @@ export default function MarketplacePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="group glass-dark rounded-2xl border border-white/10 overflow-hidden flex flex-col hover:border-primary/50 transition-all duration-300 relative"
+              className="group bg-card text-card-foreground rounded-2xl border border-border overflow-hidden flex flex-col hover:border-primary/50 transition-all duration-300 relative shadow-sm"
             >
                <div className="p-6 flex-1">
                 <div className="flex justify-between items-start mb-4">
@@ -158,7 +158,7 @@ export default function MarketplacePage() {
                     <p className="text-2xl font-bold font-mono text-primary">
                       {formatPrice(service.finalPrice)}
                     </p>
-                    <p className="text-[10px] text-secondary-foreground/40 uppercase font-bold">Balance Price</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Cool Price</p>
                   </div>
                   <div className="text-right">
                     <p className={cn(
@@ -167,7 +167,7 @@ export default function MarketplacePage() {
                     )}>
                       {service.stock} Units
                     </p>
-                    <p className="text-[10px] text-secondary-foreground/40 uppercase font-bold">Availability</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">In Stock</p>
                   </div>
                 </div>
               </div>
@@ -178,7 +178,7 @@ export default function MarketplacePage() {
                   className="w-full bg-primary py-3.5 rounded-xl text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-95 shadow-lg neon-glow"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  Confirm Purchase
+                  Buy Now Sharp-Sharp
                 </button>
               </div>
             </motion.div>

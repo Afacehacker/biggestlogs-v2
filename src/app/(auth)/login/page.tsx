@@ -54,26 +54,26 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full"
       >
-        <div className="glass-dark p-8 rounded-3xl border border-white/10 shadow-2xl">
+        <div className="bg-card text-card-foreground p-8 rounded-3xl border border-border shadow-2xl">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
-              Welcome Back
+              Oga, You're Back! 🫡
             </h1>
-            <p className="text-secondary-foreground/60 mt-2">
-              Log in to your secure dashboard
+            <p className="text-muted-foreground mt-2 font-medium">
+              Enter your details make we verify say na you.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-secondary-foreground/80 ml-1">Email</label>
+              <label className="text-sm font-bold text-foreground/80 ml-1">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/40" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="email"
                   required
                   placeholder="name@example.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full bg-muted border border-border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -81,14 +81,14 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-secondary-foreground/80 ml-1">Password</label>
+              <label className="text-sm font-bold text-foreground/80 ml-1">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/40" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="password"
                   required
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full bg-muted border border-border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  <span>Login</span>
+                  <span>Enter In Sharp</span>
                   <LogIn className="h-5 w-5" />
                 </>
               )}
@@ -112,10 +112,10 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-secondary-foreground/50 text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-primary hover:underline font-medium">
-                Sign up
+            <p className="text-muted-foreground text-sm font-medium">
+              New person?{" "}
+              <Link href="/signup" className="text-primary hover:underline font-bold">
+                Join the Gang
               </Link>
             </p>
           </div>

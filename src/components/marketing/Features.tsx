@@ -6,13 +6,13 @@ import { Cpu, Globe, Lock, Rocket, Target, Zap, ShieldCheck, Database, Layers } 
 const features = [
   {
     icon: Rocket,
-    title: "Instant Delivery",
-    description: "Automated distribution nodes ensure assets are delivered within 5 seconds of validation.",
+    title: "Fast-Fast Delivery ⚡",
+    description: "As you buy, you collect immediately. No wasting time, our system too fast.",
   },
   {
     icon: Lock,
-    title: "Quantum Encryption",
-    description: "AES-256-GCM encryption layers protect every bit of your transaction and asset data.",
+    title: "Correct Security 🔐",
+    description: "Your data and logs are safe with us. No person fit look your secret files.",
   },
   {
     icon: Target,
@@ -52,9 +52,9 @@ export const Features = () => {
             <ShieldCheck className="h-3 w-3" />
             Core Infrastructure
           </motion.div>
-          <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter font-outfit">ENGINEERED FOR <span className="text-primary">SPEED</span></h2>
-          <p className="mx-auto max-w-2xl text-secondary-foreground/60 font-medium text-lg leading-relaxed">
-            Our infrastructure is built on low-latency protocols and automated workflows to provide the most efficient asset delivery system in the world.
+          <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter font-outfit">WE DEY RUN ON <span className="text-primary">SPEED</span></h2>
+          <p className="mx-auto max-w-2xl text-muted-foreground font-medium text-lg leading-relaxed">
+            Everything for here be sharp-sharp. No stories, just high-speed delivery of correct logs.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export const Features = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
-              className="group relative p-10 rounded-[2.5rem] border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all hover:border-primary/30 overflow-hidden"
+              className="group relative p-10 rounded-[2.5rem] border border-border bg-card hover:bg-muted/50 transition-all hover:border-primary/30 overflow-hidden shadow-sm"
             >
                 {/* Tech Corners decor */}
                 <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary/20 group-hover:border-primary transition-colors opacity-0 group-hover:opacity-100" />
@@ -77,12 +77,12 @@ export const Features = () => {
                 </div>
                 
                 <h3 className="text-2xl font-bold mb-4 tracking-tight group-hover:text-primary transition-colors">{feature.title}</h3>
-                <p className="text-secondary-foreground/50 leading-relaxed font-medium">
+                <p className="text-muted-foreground leading-relaxed font-medium">
                     {feature.description}
                 </p>
 
                 {/* Cyberpunk decor line */}
-                <div className="mt-8 pt-6 border-t border-white/5">
+                <div className="mt-8 pt-6 border-t border-border">
                     <div className="flex gap-1">
                         {[1, 2, 3].map(i => (
                             <div key={i} className="h-1 w-1 bg-white/10 group-hover:bg-primary/40 rounded-full transition-colors" />
