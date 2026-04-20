@@ -56,11 +56,11 @@ export default function LoginPage() {
       >
         <div className="bg-card text-card-foreground p-8 rounded-3xl border border-border shadow-2xl">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
-              Oga, You're Back! 🫡
+            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
+              Welcome Back
             </h1>
             <p className="text-muted-foreground mt-2 font-medium">
-              Enter your details make we verify say na you.
+              Securely sign in to manage your marketplace account.
             </p>
           </div>
 
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  <span>Enter In Sharp</span>
+                  <span>Sign In</span>
                   <LogIn className="h-5 w-5" />
                 </>
               )}
@@ -113,9 +113,9 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-muted-foreground text-sm font-medium">
-              New person?{" "}
+              New to the platform?{" "}
               <Link href="/signup" className="text-primary hover:underline font-bold">
-                Join the Gang
+                Create an account
               </Link>
             </p>
           </div>

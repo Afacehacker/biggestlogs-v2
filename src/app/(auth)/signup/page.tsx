@@ -57,11 +57,11 @@ export default function SignupPage() {
       >
         <div className="bg-card text-card-foreground p-8 rounded-3xl border border-border shadow-2xl">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
-              Join the Gang 🚀
+            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
+              Create Account
             </h1>
             <p className="text-muted-foreground mt-2 font-medium">
-              Register make you start to buy correct logs.
+              Join the community and access premium digital assets.
             </p>
           </div>
 
@@ -82,14 +82,14 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-secondary-foreground/80 ml-1">Email</label>
+              <label className="text-sm font-bold text-foreground/80 ml-1">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/40" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="email"
                   required
                   placeholder="name@example.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full bg-muted border border-border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -97,14 +97,14 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-secondary-foreground/80 ml-1">Password</label>
+              <label className="text-sm font-bold text-foreground/80 ml-1">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/40" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="password"
                   required
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full bg-muted border border-border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-foreground"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
@@ -120,7 +120,7 @@ export default function SignupPage() {
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  <span>Create Account Sharp</span>
+                  <span>Create Account</span>
                   <ArrowRight className="h-5 w-5" />
                 </>
               )}
@@ -129,9 +129,9 @@ export default function SignupPage() {
 
           <div className="mt-8 text-center">
             <p className="text-muted-foreground text-sm font-medium">
-              You don get account before?{" "}
+              Already have an account?{" "}
               <Link href="/login" className="text-primary hover:underline font-bold">
-                Enter In
+                Sign In
               </Link>
             </p>
           </div>

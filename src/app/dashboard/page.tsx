@@ -13,7 +13,8 @@ import {
   Package,
   Activity,
   ChevronRight,
-  Settings
+  Settings,
+  ShieldAlert
 } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import { API_BASE_URL, getApiHeaders } from "@/lib/api-config";
@@ -48,6 +49,13 @@ export default function DashboardPage() {
   });
 
   if (!session || isLoading || isLoadingOrders) return <div className="flex h-screen items-center justify-center text-primary">Loading dashboard...</div>;
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 16) return "Good Afternoon";
+    return "Good Evening";
+  };
 
   const totalSpent = recentOrders.reduce((sum: number, order: any) => sum + order.amount, 0);
 
@@ -91,7 +99,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, x: 0 }}
         >
           <h1 className="text-3xl md:text-4xl font-black font-outfit text-foreground">
-            Welcome back, <span className="text-primary">{session?.user?.name || "User"}</span>! 👋
+            {getGreeting()}, <span className="text-primary">{session?.user?.name || "User"}</span>! 👋
           </h1>
           <p className="text-muted-foreground mt-2 font-medium">Here's what's happening with your account today.</p>
         </motion.div>
@@ -208,6 +216,18 @@ export default function DashboardPage() {
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
             </Link>
+
+            {session.user.role === "ADMIN" && (
+              <Link href="/dashboard/admin" className="w-full py-4 px-6 flex items-center justify-between rounded-xl border-2 border-red-500/50 bg-red-500/5 hover:bg-red-500/10 transition-all shadow-lg animate-pulse">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-500/20 rounded-lg">
+                    <ShieldAlert className="h-5 w-5 text-red-500" />
+                  </div>
+                  <span className="font-bold text-red-500">Admin Control Panel</span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-red-500" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
