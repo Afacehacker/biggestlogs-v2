@@ -11,7 +11,6 @@ import jwt from 'jsonwebtoken';
 const app = express();
 const httpServer = createServer(app);
 
-// Supported Origins
 const allowedOrigins = [
   "https://biggestlogs-v2-frontend.onrender.com",
   "https://biggestlogs.vercel.app",
@@ -27,16 +26,18 @@ const io = new Server(httpServer, {
 
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json());
 
+// Helper to validate MongoDB ObjectId
+const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
 // Auth Middleware
 const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
-  let userId = req.headers['x-user-id'];
+  let userId = req.headers['x-user-id'] as string;
   const authHeader = req.headers['authorization'];
 
   if (!userId && authHeader && authHeader.startsWith('Bearer ')) {
@@ -45,19 +46,25 @@ const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'biggestlogs_secret_key_2026');
       userId = decoded.id;
     } catch (error) {
-      console.error("JWT_VERIFICATION_FAILED", error);
+      console.error("JWT_VERIFY_ERR", error);
     }
   }
 
-  if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+  if (!userId) return res.status(401).json({ message: 'Unauthorized: No User ID provided' });
+  
+  if (!isValidObjectId(userId)) {
+      console.error("INVALID_OBJECT_ID:", userId);
+      return res.status(401).json({ message: 'Unauthorized: Invalid User ID format' });
+  }
 
   try {
-    const user = await prisma.user.findUnique({ where: { id: userId as string } });
-    if (!user) return res.status(401).json({ message: 'User not found' });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return res.status(401).json({ message: 'User not found in v2 database' });
     req.user = user;
     next();
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("AUTH_DB_ERR:", error);
+    res.status(500).json({ message: "Internal server error during authentication" });
   }
 };
 
@@ -67,19 +74,26 @@ const TLOGS_BASE_URL = process.env.TLOGS_BASE_URL || "https://tlogsmarketplace.c
 const tlogsApi = axios.create({ baseURL: TLOGS_BASE_URL });
 
 async function getPricingConfig() {
-  const markupSetting = await prisma.setting.findUnique({ where: { key: "MARKUP_PERCENTAGE" } });
-  const markupMultiplier = markupSetting ? parseFloat(markupSetting.value) / 100 : 5;
-  const conversionRate = parseFloat(process.env.VND_TO_NGN_RATE || "0.06");
-  return { markupMultiplier, conversionRate };
+  try {
+    const markupSetting = await prisma.setting.findUnique({ where: { key: "MARKUP_PERCENTAGE" } });
+    const markupMultiplier = markupSetting ? parseFloat(markupSetting.value) / 100 : 5;
+    const conversionRate = parseFloat(process.env.VND_TO_NGN_RATE || "0.06");
+    return { markupMultiplier, conversionRate };
+  } catch (e) {
+    console.warn("PRICING_CONFIG_FALLBACK: Using defaults");
+    return { markupMultiplier: 5, conversionRate: 0.06 };
+  }
 }
 
 // ─── API Routes ─────────────────────────────────────────────────────────────
 
 app.get('/api/ping', (req, res) => res.json({ status: 'v2-online', time: new Date() }));
 
-// 1. Services / Marketplace
+// 1. Services / Marketplace (V2 Format)
 app.get('/api/services', async (req, res) => {
   try {
+    if (!TLOGS_API_KEY) throw new Error("TLOGS_API_KEY is missing");
+    
     const { data } = await tlogsApi.get(`/products.php?api_key=${TLOGS_API_KEY}`);
     let products: any[] = [];
     if (data.categories) {
@@ -101,8 +115,9 @@ app.get('/api/services', async (req, res) => {
       };
     });
     res.json(normalized);
-  } catch (error) {
-    res.status(500).json({ message: "Marketplace unavailable" });
+  } catch (error: any) {
+    console.error("SERVICES_ERR:", error.message);
+    res.status(500).json({ message: "Marketplace unavailable", details: error.message });
   }
 });
 
@@ -111,52 +126,46 @@ app.get('/api/user/profile', authMiddleware, async (req: any, res) => {
   res.json({ ...req.user, _id: req.user.id, isAdmin: req.user.role === 'ADMIN' });
 });
 
-// 3. Orders
-app.get('/api/user/orders', authMiddleware, async (req: any, res) => {
-  try {
-    const orders = await prisma.order.findMany({
-      where: { userId: req.user.id },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(orders);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch orders" });
-  }
+// 3. User Profile (V1 Alias)
+app.get('/api/users/profile', authMiddleware, async (req: any, res) => {
+    res.json({ ...req.user, _id: req.user.id, isAdmin: req.user.role === 'ADMIN' });
 });
 
-// 4. Compatibility Routes (Aliases for v1 frontend support)
+// 4. Accounts (V1 Compatibility)
 app.get('/api/accounts', async (req, res) => {
-  // Same as services but in v1 format
   try {
+    if (!TLOGS_API_KEY) throw new Error("TLOGS_API_KEY is missing");
+
     const { data } = await tlogsApi.get(`/products.php?api_key=${TLOGS_API_KEY}`);
     let products: any[] = [];
     if (data.categories) data.categories.forEach((cat: any) => {
-      if (cat.products) products.push(...cat.products.map(p => ({...p, cat: cat.name})));
+      if (cat.products) products.push(...cat.products.map((p:any) => ({...p, cat: cat.name})));
     });
     const { markupMultiplier, conversionRate } = await getPricingConfig();
     res.json(products.map((p: any) => ({
-      id: String(p.id),
+      id: String(p.id || p.product_id),
       platform: p.cat || "Other",
       type: "Account",
-      title: p.name,
+      title: p.name || p.product_name,
       price: Math.ceil(parseFloat(p.price || 0) * conversionRate * markupMultiplier),
       stock: parseInt(p.stock || 0),
       image: "https://tlogsmarketplace.com/assets/images/product-placeholder.png",
       badges: [p.cat?.toLowerCase()],
       quality: 100
     })));
-  } catch (e) { res.status(500).json({message: "API Error"}); }
-});
-
-app.get('/api/users/profile', authMiddleware, async (req: any, res) => {
-    res.json({ ...req.user, _id: req.user.id, isAdmin: req.user.role === 'ADMIN' });
+  } catch (error: any) { 
+    console.error("ACCOUNTS_V1_ERR:", error.message);
+    res.status(500).json({message: "API Error", error: error.message}); 
+  }
 });
 
 // Socket.io for Support
 io.on('connection', (socket) => {
   socket.on('addUser', ({ userId, isAdmin }) => {
-    socket.join(userId);
-    if (isAdmin) socket.join('admins');
+    if (isValidObjectId(userId)) {
+        socket.join(userId);
+        if (isAdmin) socket.join('admins');
+    }
   });
   socket.on('sendMessage', (data) => {
     const { receiverId, isAdmin } = data;
