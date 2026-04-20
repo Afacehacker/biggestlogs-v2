@@ -82,6 +82,15 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
+const getPricingConfig = async () => {
+  try {
+    const conversionRate = parseFloat(process.env.VND_TO_NGN_RATE || "0.06");
+    return { markupMultiplier: 5, conversionRate }; // Assuming default markup since setting isn't imported
+  } catch (e) {
+    return { markupMultiplier: 5, conversionRate: 0.06 };
+  }
+};
+
 // User Profile
 app.get('/api/user/profile', authMiddleware, async (req: any, res) => {
   res.json({ 
@@ -138,6 +147,35 @@ app.get('/api/services', async (req, res) => {
     res.json(logs);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching logs' });
+  }
+});
+
+// Accounts (V1 Compatibility)
+app.get('/api/accounts', async (req, res) => {
+  try {
+    const TLOGS_API_KEY = process.env.TLOGS_API_KEY;
+    if (!TLOGS_API_KEY) throw new Error("TLOGS_API_KEY is missing");
+
+    const tlogsApi = axios.create({ baseURL: process.env.TLOGS_BASE_URL || "https://tlogsmarketplace.com/api" });
+    const { data } = await tlogsApi.get(`/products.php?api_key=${TLOGS_API_KEY}`);
+    let products: any[] = [];
+    if (data.categories) data.categories.forEach((cat: any) => {
+      if (cat.products) products.push(...cat.products.map((p:any) => ({...p, cat: cat.name})));
+    });
+    const { markupMultiplier, conversionRate } = await getPricingConfig();
+    res.json(products.map((p: any) => ({
+      id: String(p.id || p.product_id),
+      platform: p.cat || "Other",
+      type: "Account",
+      title: p.name || p.product_name,
+      price: Math.ceil(parseFloat(p.price || 0) * conversionRate * markupMultiplier),
+      stock: parseInt(p.stock || 0),
+      image: "https://tlogsmarketplace.com/assets/images/product-placeholder.png",
+      badges: [p.cat?.toLowerCase()],
+      quality: 100
+    })));
+  } catch (error: any) { 
+    res.status(500).json({message: "API Error", error: error.message}); 
   }
 });
 
