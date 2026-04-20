@@ -1,12 +1,11 @@
 services:
-  # Backend Service (Express)
+  # ─── Backend Service (Express + Prisma + Socket.io) ───────────────────────
   - type: web
-    name: biggestlogs-backend
+    name: biggestlogs-v2-backend          # NEW name → new Render URL
     env: node
     plan: free
-    # Force complete deletion of node_modules to solve corrupted @prisma/engines cache
-    buildCommand: rm -rf node_modules && npm install && npx prisma generate
-    startCommand: npm run server
+    buildCommand: npm install && npx prisma generate
+    startCommand: node server.js
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -18,23 +17,26 @@ services:
         sync: false
       - key: TLOGS_API_KEY
         sync: false
-      - key: TLOGS_USER_ID
-        sync: false
+      - key: TLOGS_BASE_URL
+        value: https://tlogsmarketplace.com/api
       - key: VND_TO_NGN_RATE
-        sync: false
+        value: "0.06"
+      - key: NODE_ENV
+        value: production
 
-  # Frontend Service (Next.js)
+  # ─── Frontend Service (Next.js) ────────────────────────────────────────────
   - type: web
-    name: biggestlogs-frontend
+    name: biggestlogs-v2-frontend
     env: node
     plan: free
-    buildCommand: rm -rf node_modules && npm install && npx prisma generate && npm run build
+    buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
         value: 20
+      # Point ONLY at the NEW v2 backend — never the old v1 one
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        value: https://biggestlogs-v2-backend.onrender.com
       - key: DATABASE_URL
         sync: false
       - key: NEXTAUTH_URL

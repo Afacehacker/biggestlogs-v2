@@ -1,13 +1,30 @@
+import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import cors from 'cors';
+import jwt from 'jsonwebtoken';
 import prisma from './prisma';
 import axios from 'axios';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import bcrypt from 'bcryptjs';
 
 const app = express();
-const PORT = process.env.BACKEND_PORT || 5000;
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: [
+      "https://biggestlogs.vercel.app",
+      "https://biggestlogs-v2-frontend.onrender.com",
+      "http://localhost:5173",
+      "http://localhost:3000"
+    ],
+    methods: ["GET", "POST"]
+  }
+});
+const PORT = process.env.PORT || process.env.BACKEND_PORT || 5000;
 
 // Ensure uploads directory exists
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -28,7 +45,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://biggestlogs.vercel.app",
+    "https://biggestlogs-v2-frontend.onrender.com",
+    "http://localhost:5173",
+    "http://localhost:3000"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -110,16 +135,36 @@ async function getPricingConfig() {
 
 // --- Middlewares ---
 const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
-  const userId = req.headers['x-user-id'];
+  let userId = req.headers['x-user-id'];
+  const authHeader = req.headers['authorization'];
+
+  // If no x-user-id, try extracting from Bearer token (Legacy v1 support)
+  if (!userId && authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.split(' ')[1];
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'biggestlogs_secret_key_2026');
+      userId = decoded.id;
+    } catch (error) {
+      console.error("JWT_VERIFICATION_FAILED:", error);
+      // Don't return yet, we'll check userId below
+    }
+  }
+
   if (!userId) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-  const user = await prisma.user.findUnique({ where: { id: userId as string } });
-  if (!user) {
-    return res.status(401).json({ message: 'User not found' });
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId as string } });
+    if (!user) {
+      return res.status(401).json({ message: 'User not found in database' });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("AUTH_MIDDLEWARE_ERROR:", error);
+    res.status(500).json({ message: "Auth internal error" });
   }
-  req.user = user;
-  next();
 };
 
 const adminMiddleware = async (req: any, res: Response, next: NextFunction) => {
@@ -129,7 +174,68 @@ const adminMiddleware = async (req: any, res: Response, next: NextFunction) => {
   next();
 };
 
+// --- Socket.io Logic ---
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('addUser', ({ userId, isAdmin }) => {
+    socket.join(userId);
+    if (isAdmin) socket.join('admins');
+    console.log(`User ${userId} joined`);
+  });
+
+  socket.on('sendMessage', (data) => {
+    const { receiverId, isAdmin } = data;
+    if (isAdmin) {
+      // Admin sending to user
+      io.to(receiverId).emit('getMessage', data);
+    } else {
+      // User sending to admin
+      io.to('admins').emit('getMessage', data);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
 // --- Routes ---
+
+// Root Route
+app.get('/', (req: Request, res: Response) => {
+  res.send('BIGGESTLOGS API is running... 🚀');
+});
+
+// Health Check
+app.get('/api/ping', (req: Request, res: Response) => {
+  res.json({ status: 'alive', time: new Date() });
+});
+
+// Compatibility Route: /api/accounts (Mapping services to v1 format)
+app.get('/api/accounts', async (req: Request, res: Response) => {
+  try {
+    const services = await getServices();
+    const { markupMultiplier, conversionRate } = await getPricingConfig();
+
+    const formatted = services.map((s: any) => ({
+      id: s.id,
+      platform: s.category, // Map category to platform
+      type: "Account",      // Default type
+      title: s.name,        // Map name to title
+      description: s.description,
+      price: Math.ceil(s.price * conversionRate * markupMultiplier),
+      stock: s.stock,
+      image: "https://tlogsmarketplace.com/assets/images/product-placeholder.png",
+      badges: [s.category.toLowerCase()],
+      quality: 100
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch accounts" });
+  }
+});
 
 // 1. Get Services
 app.get('/api/services', async (req: Request, res: Response) => {
@@ -156,13 +262,14 @@ app.get('/api/services', async (req: Request, res: Response) => {
 // 2. Place Order
 app.post('/api/orders', authMiddleware, async (req: any, res: Response) => {
   try {
-    const { serviceId } = req.body;
+    const { serviceId, accountId } = req.body; // accountId is legacy v1 alias
+    const idToUse = serviceId || accountId;
     const user = req.user;
 
     const services = await getServices();
-    const service = services.find((s: any) => s.id === serviceId);
+    const service = services.find((s: any) => s.id === idToUse);
 
-    if (!service) return res.status(404).json({ message: "Service not found" });
+    if (!service) return res.status(404).json({ message: "Service/Account not found" });
 
     const { markupMultiplier, conversionRate } = await getPricingConfig();
     const finalPrice = Math.ceil(service.price * conversionRate * markupMultiplier);
@@ -254,6 +361,16 @@ app.post('/api/orders', authMiddleware, async (req: any, res: Response) => {
 app.get('/api/user/orders', authMiddleware, async (req: any, res: Response) => {
   const orders = await prisma.order.findMany({
     where: { userId: req.user.id },
+    include: { user: { select: { name: true, email: true } } }, // Populate for v1 compatibility
+    orderBy: { createdAt: 'desc' }
+  });
+  res.json(orders.map((o: any) => ({ ...o, account: { title: o.serviceName, price: o.amount } }))); // Fake populate for v1
+});
+
+// Alias for v1 frontend
+app.get('/api/orders/myorders', authMiddleware, async (req: any, res: Response) => {
+  const orders = await prisma.order.findMany({
+    where: { userId: req.user.id },
     orderBy: { createdAt: 'desc' }
   });
   res.json(orders);
@@ -272,12 +389,90 @@ app.get('/api/user/transactions', authMiddleware, async (req: any, res: Response
   }
 });
 
+// --- Legacy Auth Routes (v1 compatibility) ---
+
+app.post('/api/users/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (user && await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign(
+        { id: user.id }, 
+        process.env.JWT_SECRET || 'biggestlogs_secret_key_2026', 
+        { expiresIn: '30d' }
+      );
+
+      res.json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.role === 'ADMIN',
+        role: user.role,
+        balance: user.balance,
+        token: token,
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid email or password' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Login failed" });
+  }
+});
+
+app.post('/api/users', async (req: Request, res: Response) => {
+  try {
+    const { name, email, password } = req.body;
+    const userExists = await prisma.user.findUnique({ where: { email } });
+
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { name, email, password: hashedPassword }
+    });
+
+    const token = jwt.sign(
+      { id: user.id }, 
+      process.env.JWT_SECRET || 'biggestlogs_secret_key_2026', 
+      { expiresIn: '30d' }
+    );
+
+    res.status(201).json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.role === 'ADMIN',
+      role: user.role,
+      balance: user.balance,
+      token: token,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Registration failed" });
+  }
+});
+
 // 3c. User Profile (Fresh balance)
 app.get('/api/user/profile', authMiddleware, async (req: any, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: { balance: true, email: true, name: true, role: true }
+      select: { id: true, balance: true, email: true, name: true, role: true }
+    });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch profile" });
+  }
+});
+
+// Alias for v1 frontend
+app.get('/api/users/profile', authMiddleware, async (req: any, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { id: true, balance: true, email: true, name: true, role: true }
     });
     res.json(user);
   } catch (error) {
@@ -521,11 +716,11 @@ app.post('/api/support/tickets/:ticketId/messages', authMiddleware, async (req: 
   }
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`Express server running on port ${PORT}`);
+const serverWrapper = httpServer.listen(PORT, () => {
+  console.log(`Express server with Socket.io running on port ${PORT}`);
 });
 
-server.on('error', (err) => {
+serverWrapper.on('error', (err) => {
   console.error("SERVER_ERROR:", err);
 });
 
