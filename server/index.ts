@@ -40,11 +40,12 @@ connectDB();
 // Middlewares
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
-
+// Ensure uploads directory exists
+const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
+app.use('/uploads', express.static(uploadDir));
 
 // Multer Setup
 const storage = multer.diskStorage({
