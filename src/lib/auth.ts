@@ -1,7 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -22,33 +21,37 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
-        });
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        
+        try {
+          const res = await fetch(`${API_URL}/api/users/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
 
-        if (!user || !user?.password) {
-          throw new Error("Invalid credentials");
+          const data = await res.json();
+
+          if (!res.ok || !data) {
+            throw new Error(data?.message || "Invalid credentials");
+          }
+
+          return {
+            id: data._id || data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            balance: data.balance,
+          };
+        } catch (error: any) {
+          console.error("AUTH_BACKEND_ERROR", error);
+          throw new Error(error.message || "Authentication failed");
         }
-
-        const isPasswordCorrect = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isPasswordCorrect) {
-          throw new Error("Invalid credentials");
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          balance: user.balance,
-        };
       },
+
     }),
   ],
   callbacks: {
