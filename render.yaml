@@ -1,45 +1,26 @@
 services:
-  # ─── Backend Service (Express + Prisma + Socket.io) ───────────────────────
+  # ─── Full-Stack Next.js Service (MongoDB Powered) ──────────────────────────
   - type: web
-    name: biggestlogs-v2-backend          # NEW name → new Render URL
+    name: biggestlogs-v2
     env: node
     plan: free
-    buildCommand: npm install && npx prisma generate
-    startCommand: node server.js
-    envVars:
-      - key: NODE_VERSION
-        value: 20
-      - key: DATABASE_URL
-        sync: false
-      - key: JWT_SECRET
-        sync: false
-      - key: NEXTAUTH_SECRET
-        sync: false
-      - key: TLOGS_API_KEY
-        sync: false
-      - key: TLOGS_BASE_URL
-        value: https://tlogsmarketplace.com/api
-      - key: VND_TO_NGN_RATE
-        value: "0.06"
-      - key: NODE_ENV
-        value: production
-
-  # ─── Frontend Service (Next.js) ────────────────────────────────────────────
-  - type: web
-    name: biggestlogs-v2-frontend
-    env: node
-    plan: free
-    buildCommand: npm install && npx prisma generate && npm run build
+    region: ohio
+    buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
         value: 20
-      # Point ONLY at the NEW v2 backend — never the old v1 one
-      - key: NEXT_PUBLIC_API_URL
-        value: https://biggestlogs-v2-backend.onrender.com
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false # Set this in Render Dashboard
       - key: DATABASE_URL
-        sync: false
-      - key: NEXTAUTH_URL
-        sync: false
+        sync: false # Set same as MONGODB_URI
       - key: NEXTAUTH_SECRET
+        sync: false # Set this in Render Dashboard
+      - key: NEXTAUTH_URL
+        value: https://biggestlogs-v2.onrender.com # Update this after deploy
+      - key: TLOGS_API_KEY
         sync: false
+      - key: TLOGS_BASE_URL
+        value: https://tlogsmarketplace.com/api
