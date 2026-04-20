@@ -27,29 +27,29 @@ export function NewHero() {
               Introducing V2 (MongoDB Powered)
             </span>
           </div>
-          <h1 className="mt-10 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-            The Biggest <span className="text-primary">Plug</span> don land. Correct Logs only.
+          <h1 className="mt-10 text-4xl font-black tracking-tight text-foreground sm:text-6xl font-outfit">
+            The Ultimate <span className="text-primary">Premium</span> Marketplace. Verified Only.
           </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Get your premium logs and accounts sharp-sharp. No stories, no dulling. Correct quality straight to your front door.
+          <p className="mt-6 text-lg leading-8 text-muted-foreground font-medium">
+            Access high-quality premium accounts and assets instantly. Secure, reliable, and verified logs delivered directly to your dashboard.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
             <a
-              href="/marketplace"
-              className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all hover:scale-105"
+              href="/signup"
+              className="rounded-xl bg-primary px-6 py-3 text-sm font-black text-primary-foreground shadow-lg hover:bg-primary/80 transition-all hover:scale-105 neon-glow uppercase tracking-[0.1em]"
             >
-              Start Buying Sharp
+              Get Started
             </a>
-            <a href="/login" className="text-sm font-semibold leading-6 text-foreground hover:text-primary transition-colors">
-              Enter In <span aria-hidden="true">→</span>
+            <a href="/login" className="text-sm font-bold leading-6 text-foreground hover:text-primary transition-colors flex items-center gap-2">
+              Sign In <span aria-hidden="true">→</span>
             </a>
           </div>
 
           <div className="mt-20 grid grid-cols-2 gap-8 sm:grid-cols-4">
             {[
               { label: 'Uptime', value: '99.9%', icon: Globe },
-              { label: 'Security', value: 'Correct', icon: Shield },
-              { label: 'Delivery', value: 'Fast-Fast', icon: Zap },
+              { label: 'Security', value: 'Verified', icon: Shield },
+              { label: 'Delivery', value: 'Instant', icon: Zap },
               { label: 'Privacy', value: 'Encrypted', icon: Lock },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col gap-2">

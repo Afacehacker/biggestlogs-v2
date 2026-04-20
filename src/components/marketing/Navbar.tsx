@@ -103,7 +103,7 @@ export const Navbar = () => {
                     className="flex items-center space-x-2 text-sm font-bold text-red-500 hover:text-red-400 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>Waka Away</span>
+                    <span>Sign Out</span>
                   </button>
                 </>
               ) : (
@@ -112,13 +112,13 @@ export const Navbar = () => {
                     href="/login"
                     className="text-sm font-medium text-secondary-foreground hover:text-primary transition-colors"
                   >
-                    Login
+                    Sign In
                   </Link>
                   <Link
                     href="/signup"
                     className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all neon-glow"
                   >
-                    Sign Up
+                    Get Started
                   </Link>
                 </>
               )}
@@ -169,7 +169,7 @@ export const Navbar = () => {
                 <Link href="/dashboard/wallet" className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20 mb-2" onClick={() => setIsOpen(false)}>
                   <div className="flex items-center gap-3">
                     <Wallet className="h-5 w-5 text-primary" />
-                    <span className="font-bold text-primary">My Money</span>
+                    <span className="font-bold text-primary">Wallet Balance</span>
                   </div>
                   <span className="font-mono font-bold text-primary">{formatPrice(profile?.balance || 0)}</span>
                 </Link>
@@ -188,10 +188,10 @@ export const Navbar = () => {
           ) : (
             <>
               <Link href="/login" className="block rounded-md px-3 py-2 text-base font-medium text-secondary-foreground hover:bg-secondary hover:text-primary" onClick={() => setIsOpen(false)}>
-                Login
+                Sign In
               </Link>
               <Link href="/signup" className="block rounded-md px-3 py-2 text-base font-medium text-primary hover:bg-secondary" onClick={() => setIsOpen(false)}>
-                Sign Up
+                Get Started
               </Link>
             </>
           )}

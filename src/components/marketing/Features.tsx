@@ -6,13 +6,13 @@ import { Cpu, Globe, Lock, Rocket, Target, Zap, ShieldCheck, Database, Layers } 
 const features = [
   {
     icon: Rocket,
-    title: "Fast-Fast Delivery ⚡",
-    description: "As you buy, you collect immediately. No wasting time, our system too fast.",
+    title: "Instant Delivery ⚡",
+    description: "Automated instant fulfillment system ensures you receive your assets the moment your purchase is confirmed.",
   },
   {
     icon: Lock,
-    title: "Correct Security 🔐",
-    description: "Your data and logs are safe with us. No person fit look your secret files.",
+    title: "Advanced Security 🔐",
+    description: "Your assets and personal identifiers are protected with top-tier encryption and decentralized storage.",
   },
   {
     icon: Target,
@@ -52,9 +52,9 @@ export const Features = () => {
             <ShieldCheck className="h-3 w-3" />
             Core Infrastructure
           </motion.div>
-          <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter font-outfit">WE DEY RUN ON <span className="text-primary">SPEED</span></h2>
+          <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter font-outfit uppercase">ENGINEERED FOR <span className="text-primary">SPEED</span></h2>
           <p className="mx-auto max-w-2xl text-muted-foreground font-medium text-lg leading-relaxed">
-            Everything for here be sharp-sharp. No stories, just high-speed delivery of correct logs.
+            Our infrastructure is built for high-performance asset delivery with zero latency and absolute reliability.
           </p>
         </div>
 
