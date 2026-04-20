@@ -45,7 +45,7 @@ export default function MarketplacePage() {
   const categories = ["All", ...new Set(services.map((s: any) => s.category))];
 
   const filteredServices = services.filter((service: any) => {
-    const matchesSearch = service.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = (service.name || "").toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory === "All" || service.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });

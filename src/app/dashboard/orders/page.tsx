@@ -45,8 +45,8 @@ export default function OrdersPage() {
 
 
   const filteredOrders = orders.filter((order: any) => 
-    order.serviceName.toLowerCase().includes(search.toLowerCase()) ||
-    order.id.toLowerCase().includes(search.toLowerCase())
+    (order.serviceName || "").toLowerCase().includes(search.toLowerCase()) ||
+    (order.id || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const copyAsset = (text: string) => {
