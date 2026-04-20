@@ -99,7 +99,7 @@ export default function DashboardPage() {
           animate={{ opacity: 1, x: 0 }}
         >
           <h1 className="text-3xl md:text-4xl font-black font-outfit text-foreground">
-            {getGreeting()}, <span className="text-primary">{session?.user?.name || session?.user?.email?.split('@')[0] || "Trader"}</span>! 👋
+            {getGreeting()}, <span className="text-primary">{(!session?.user?.name || session?.user?.name === "User") ? (session?.user?.email?.split('@')[0] || "Trader") : session?.user?.name}</span>! 👋
           </h1>
           <p className="text-muted-foreground mt-2 font-medium">Here's what's happening with your account today.</p>
         </motion.div>

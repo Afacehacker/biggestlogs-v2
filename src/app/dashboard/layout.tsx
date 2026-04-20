@@ -170,7 +170,9 @@ export default function DashboardLayout({
             </Link>
             <div className="flex items-center space-x-2 bg-muted rounded-full px-4 py-2 border border-border">
               <UserCircle className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium hidden sm:inline">{session.user.name}</span>
+              <span className="text-sm font-medium hidden sm:inline">
+                {(!session?.user?.name || session?.user?.name === "User") ? (session?.user?.email?.split('@')[0] || "Trader") : session?.user?.name}
+              </span>
             </div>
             <button className="relative p-2 rounded-lg hover:bg-white/5 text-secondary-foreground transition-colors">
               <Bell className="h-5 w-5" />
