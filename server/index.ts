@@ -143,10 +143,34 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
 // Services (Logs) fetch
 app.get('/api/services', async (req, res) => {
   try {
-    const logs = await Log.find({ status: 'active' });
-    res.json(logs);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching logs' });
+    const TLOGS_API_KEY = process.env.TLOGS_API_KEY;
+    if (!TLOGS_API_KEY) throw new Error("TLOGS_API_KEY is missing");
+    
+    const tlogsApi = axios.create({ baseURL: process.env.TLOGS_BASE_URL || "https://tlogsmarketplace.com/api" });
+    const { data } = await tlogsApi.get(`/products.php?api_key=${TLOGS_API_KEY}`);
+    let products: any[] = [];
+    if (data.categories) {
+      data.categories.forEach((cat: any) => {
+        if (cat.products) cat.products.forEach((p: any) => products.push({ ...p, category_name: cat.name }));
+      });
+    }
+    const { markupMultiplier, conversionRate } = await getPricingConfig();
+    const normalized = products.map((p: any) => {
+      const basePrice = parseFloat(p.price || 0) * conversionRate;
+      return {
+        id: String(p.id || p.product_id),
+        name: p.name || p.product_name,
+        category: p.category_name || "Other",
+        price: basePrice,
+        finalPrice: Math.ceil(basePrice * markupMultiplier),
+        stock: parseInt(p.stock || 0),
+        description: p.description || ""
+      };
+    });
+    res.json(normalized);
+  } catch (error: any) {
+    console.error("SERVICES_ERR:", error.message);
+    res.status(500).json({ message: "Marketplace unavailable", details: error.message });
   }
 });
 
