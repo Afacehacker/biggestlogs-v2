@@ -18,6 +18,7 @@ const app = express();
 const httpServer = createServer(app);
 const allowedOrigins = [
   "https://biggestlogs.vercel.app", 
+  "https://biggestlogs-v2.vercel.app",
   "http://localhost:3000", 
   "https://biggestlogs-v2-1.onrender.com"
 ];
