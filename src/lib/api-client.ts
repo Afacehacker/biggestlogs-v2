@@ -1,53 +1,91 @@
 import axios from "axios";
 
 const API_KEY = process.env.TLOGS_API_KEY;
-const BASE_URL = process.env.TLOGS_BASE_URL || "https://api.tlogsmarketplace.com/v1";
+const BASE_URL = process.env.TLOGS_BASE_URL || "https://tlogsmarketplace.com/api";
 
 const tlogsApi = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    "Authorization": `Bearer ${API_KEY}`,
-    "Content-Type": "application/json",
-  },
 });
 
-export const getServices = async () => {
+// ---------------------------------------------------------------------------
+// getServices — mirrors the logic in server/index.ts getServices()
+// ---------------------------------------------------------------------------
+export const getServices = async (): Promise<any[]> => {
   try {
-    // This is a placeholder for the actual API call
-    // Most marketplaces have a 'services' or 'products' endpoint
-    const response = await tlogsApi.get("/services");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching services:", error);
-    // Mock data for development if API fails
-    return [
-      { id: "1", name: "Premium Log A", category: "Logs", price: 10, stock: 50 },
-      { id: "2", name: "Enterprise Log B", category: "Logs", price: 25, stock: 12 },
-      { id: "3", name: "Stealer Log C", category: "Stealers", price: 5, stock: 100 },
-      { id: "4", name: "Combo List D", category: "Combos", price: 15, stock: 30 },
-    ];
-  }
-};
+    const response = await tlogsApi.get(`/products.php?api_key=${API_KEY}`);
+    const data = response.data;
+    let products: any[] = [];
 
-export const placeOrder = async (serviceId: string, quantity: number = 1) => {
-  try {
-    const response = await tlogsApi.post("/orders", {
-      service_id: serviceId,
-      quantity,
+    // TLogs API structure: { categories: [ { name: "...", products: [...] } ] }
+    if (data.categories && Array.isArray(data.categories)) {
+      data.categories.forEach((cat: any) => {
+        if (cat.products && Array.isArray(cat.products)) {
+          cat.products.forEach((p: any) => {
+            products.push({ ...p, category_name: cat.name });
+          });
+        }
+      });
+    } else if (Array.isArray(data)) {
+      products = data;
+    }
+
+    // Normalize and categorize — identical to server/index.ts
+    const normalized = products.map((p: any) => {
+      const name = (p.name || p.product_name || p.Name || "Unnamed Product").toUpperCase();
+      let category = (p.category_name || p.Category || "Other").toUpperCase();
+
+      if (name.includes("FACEBOOK") || category.includes("FACEBOOK") || name.startsWith("FB ")) category = "Facebook";
+      else if (name.includes("INSTAGRAM") || category.includes("INSTAGRAM") || name.startsWith("IG ")) category = "Instagram";
+      else if (name.includes("TIKTOK") || category.includes("TIKTOK")) category = "TikTok";
+      else if (name.includes("GOOGLE") || name.includes("GMAIL") || category.includes("GOOGLE")) category = "Google";
+      else if (name.includes("TWITTER") || name.includes("X.COM") || category.includes("TWITTER")) category = "Twitter (X)";
+      else if (name.includes("NETFLIX") || name.includes("DISNEY") || name.includes("PREMIUM")) category = "Premium Accounts";
+      else {
+        category = category.charAt(0) + category.slice(1).toLowerCase();
+      }
+
+      return {
+        id: String(p.id || p.product_id || p.ID || Math.random()),
+        name: p.name || p.product_name || p.Name,
+        category,
+        price: parseFloat(p.price || p.Price || p.cost || 0),
+        stock: parseInt(p.stock || p.amount || p.Quantity || p.Stock || p.count || 0),
+        description: p.description || p.Description || "",
+      };
     });
-    return response.data;
+
+    return normalized.sort((a, b) => a.price - b.price);
   } catch (error) {
-    console.error("Error placing order:", error);
-    throw error;
+    console.error("Error fetching services from TLogs:", error);
+    return [];
   }
 };
 
-export const getOrderStatus = async (orderId: string) => {
-  try {
-    const response = await tlogsApi.get(`/orders/${orderId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching order status:", error);
-    throw error;
+// ---------------------------------------------------------------------------
+// placeOrder — mirrors the Express server's /buy_product call
+// ---------------------------------------------------------------------------
+export const placeOrder = async (serviceId: string, quantity: number = 1) => {
+  const formData = new URLSearchParams();
+  formData.append("action", "buyProduct");
+  formData.append("id", serviceId);
+  formData.append("amount", String(quantity));
+  formData.append("api_key", API_KEY as string);
+
+  const response = await tlogsApi.post("/buy_product", formData, {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  });
+
+  if (response.data?.status !== "success") {
+    throw new Error(response.data?.msg || "External API returned a non-success status");
   }
+
+  return response.data;
+};
+
+// ---------------------------------------------------------------------------
+// getOrderStatus
+// ---------------------------------------------------------------------------
+export const getOrderStatus = async (transId: string) => {
+  const response = await tlogsApi.get(`/order_status.php?api_key=${API_KEY}&trans_id=${transId}`);
+  return response.data;
 };
