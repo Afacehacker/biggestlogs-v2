@@ -164,7 +164,7 @@ app.get('/api/services', async (req, res) => {
         category: p.category_name || "Other",
         price: basePrice,
         finalPrice: Math.ceil(basePrice * markupMultiplier),
-        stock: parseInt(p.stock || 0),
+        stock: parseInt(p.amount || 0),
         description: p.description || ""
       };
     });
@@ -210,7 +210,7 @@ app.get('/api/accounts', async (req, res) => {
       type: "Account",
       title: p.name || p.product_name,
       price: Math.ceil(parseFloat(p.price || 0) * conversionRate * markupMultiplier),
-      stock: parseInt(p.stock || 0),
+      stock: parseInt(p.amount || 0),
       image: "https://tlogsmarketplace.com/assets/images/product-placeholder.png",
       badges: [p.cat?.toLowerCase()],
       quality: 100
