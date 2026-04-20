@@ -1,5 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
+import bcrypt from "bcryptjs";
 
 
 export const authOptions: NextAuthOptions = {
@@ -18,38 +21,30 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
+
+        await dbConnect();
+        
+        const user = await User.findOne({ email: credentials.email });
+
+        if (!user || !user.password) {
           throw new Error("Invalid credentials");
         }
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        
-        try {
-          const res = await fetch(`${API_URL}/api/users/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
+        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
 
-          const data = await res.json();
-
-          if (!res.ok || !data) {
-            throw new Error(data?.message || "Invalid credentials");
-          }
-
-          return {
-            id: data._id || data.id,
-            email: data.email,
-            name: data.name,
-            role: data.role,
-            balance: data.balance,
-          };
-        } catch (error: any) {
-          console.error("AUTH_BACKEND_ERROR", error);
-          throw new Error(error.message || "Authentication failed");
+        if (!isPasswordCorrect) {
+          throw new Error("Invalid credentials");
         }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          username: user.username,
+          role: user.role,
+          balance: user.balance,
+        };
       },
 
     }),
