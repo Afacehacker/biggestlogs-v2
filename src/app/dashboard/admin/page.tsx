@@ -70,9 +70,9 @@ export default function AdminPage() {
         <div>
           <h1 className="text-3xl font-bold font-outfit text-red-500 flex items-center gap-3">
             <Lock className="h-8 w-8" />
-            Admin Command Center
+            Admin Control Center 🔐
           </h1>
-          <p className="text-secondary-foreground/60">Manage platform users, orders, and global settings.</p>
+          <p className="text-muted-foreground font-medium">Manage platform data, users, and global parameters.</p>
         </div>
       </div>
 
@@ -102,20 +102,20 @@ export default function AdminPage() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2">
           {/* Stats Bar */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="glass-dark p-6 rounded-2xl border border-white/5">
-              <p className="text-xs font-bold text-secondary-foreground/40 uppercase mb-2">Total Users</p>
+            <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm">
+              <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Registered Users</p>
               <h3 className="text-3xl font-bold font-mono">{data?.stats?.totalUsers || 0}</h3>
             </div>
-            <div className="glass-dark p-6 rounded-2xl border border-white/5">
-              <p className="text-xs font-bold text-secondary-foreground/40 uppercase mb-2">Total Orders</p>
+            <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm">
+              <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Total Sales</p>
               <h3 className="text-3xl font-bold font-mono">{data?.stats?.totalOrders || 0}</h3>
             </div>
-            <div className="glass-dark p-6 rounded-2xl border border-white/5">
-              <p className="text-xs font-bold text-secondary-foreground/40 uppercase mb-2">Pending Deposits</p>
+            <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm">
+              <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Pending Verifications</p>
               <h3 className="text-3xl font-bold font-mono text-amber-500">{data?.stats?.totalPendingDeposits || 0}</h3>
             </div>
-            <div className="glass-dark p-6 rounded-2xl border border-white/5">
-              <p className="text-xs font-bold text-secondary-foreground/40 uppercase mb-2">Active Markup</p>
+            <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm">
+              <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Active Markup</p>
               <h3 className="text-3xl font-bold font-mono text-primary">{data?.settings?.MARKUP_PERCENTAGE || "500"}%</h3>
             </div>
           </div>
@@ -123,17 +123,17 @@ export default function AdminPage() {
       )}
 
       {activeTab === "payments" && (
-        <div className="glass-dark rounded-2xl border border-white/5 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+        <div className="bg-card text-card-foreground shadow-sm rounded-2xl border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-2">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-white/5 text-[10px] uppercase tracking-widest text-secondary-foreground/40 font-bold border-b border-white/5">
+              <tr className="bg-muted text-[10px] uppercase tracking-widest text-muted-foreground font-bold border-b border-border">
                 <th className="px-6 py-4">User / Ref</th>
                 <th className="px-6 py-4">Amount</th>
                 <th className="px-6 py-4">Proof</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {data?.deposits?.map((deposit: any) => (
                 <tr key={deposit.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
@@ -206,17 +206,17 @@ export default function AdminPage() {
       )}
 
       {activeTab === "users" && (
-        <div className="glass-dark rounded-2xl border border-white/5 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+        <div className="bg-card text-card-foreground shadow-sm rounded-2xl border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-2">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-white/5 text-[10px] uppercase tracking-widest text-secondary-foreground/40 font-bold border-b border-white/5">
+              <tr className="bg-muted text-[10px] uppercase tracking-widest text-muted-foreground font-bold border-b border-border">
                 <th className="px-6 py-4">User</th>
                 <th className="px-6 py-4">Role</th>
                 <th className="px-6 py-4">Balance</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {data?.users?.map((user: any) => (
                 <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
@@ -245,12 +245,12 @@ export default function AdminPage() {
                                 body: JSON.stringify({ userId: user.id, balance: newBalance, role: user.role })
                             });
                             if (res.ok) {
-                                toast.success("Balance Updated");
+                                toast.success("Balance Updated Sharp-Sharp!");
                                 queryClient.invalidateQueries({ queryKey: ["adminData"] });
                             }
                         }
                       }}
-                      className="p-2 bg-white/5 border border-white/10 rounded-lg hover:border-primary/50 transition-all font-bold text-xs"
+                      className="p-2 bg-muted border border-border rounded-lg hover:border-primary/50 transition-all font-bold text-xs"
                     >
                       Edit
                     </button>
@@ -280,17 +280,17 @@ export default function AdminPage() {
       )}
 
       {activeTab === "orders" && (
-        <div className="glass-dark rounded-2xl border border-white/5 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+        <div className="bg-card text-card-foreground shadow-sm rounded-2xl border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-2">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-white/5 text-[10px] uppercase tracking-widest text-secondary-foreground/40 font-bold border-b border-white/5">
+              <tr className="bg-muted text-[10px] uppercase tracking-widest text-muted-foreground font-bold border-b border-border">
                 <th className="px-6 py-4">Order / User</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Pricing</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {data?.orders?.map((order: any) => (
                 <tr key={order.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
@@ -330,25 +330,25 @@ export default function AdminPage() {
       )}
       {activeTab === "settings" && (
         <div className="max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-2">
-          <div className="glass-dark p-8 rounded-3xl border border-white/10 shadow-xl space-y-6">
+          <div className="bg-card text-card-foreground p-8 rounded-3xl border border-border shadow-xl space-y-6">
             <div className="flex items-center gap-3 mb-2 text-primary">
               <Settings className="h-6 w-6" />
               <h3 className="text-xl font-bold">Pricing Logic</h3>
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-secondary-foreground/80">Markup Percentage (%)</label>
+              <label className="text-sm font-bold">Profit Markup %</label>
               <div className="relative">
-                <TrendingUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-foreground/30" />
+                <TrendingUp className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="number"
                   placeholder="500"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                  className="w-full bg-muted border border-border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
                   value={markup}
                   onChange={(e) => setMarkup(e.target.value)}
                 />
               </div>
-              <p className="text-[10px] text-secondary-foreground/40 mt-2 italic">
+              <p className="text-[10px] text-muted-foreground mt-2 italic font-medium">
                 Example: 500% markup means a ₦1,000 base price becomes ₦5,000 for the user.
               </p>
             </div>

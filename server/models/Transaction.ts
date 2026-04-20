@@ -6,6 +6,8 @@ export interface ITransaction extends Document {
   type: 'deposit' | 'purchase' | 'refund';
   status: 'pending' | 'completed' | 'failed';
   description: string;
+  paymentRef?: string;
+  screenshotUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +19,8 @@ const TransactionSchema: Schema = new Schema(
     type: { type: String, enum: ['deposit', 'purchase', 'refund'], required: true },
     status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
     description: { type: String },
+    paymentRef: { type: String },
+    screenshotUrl: { type: String },
   },
   { timestamps: true }
 );

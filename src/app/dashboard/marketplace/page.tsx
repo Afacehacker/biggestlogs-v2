@@ -82,10 +82,12 @@ export default function MarketplacePage() {
   return (
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold font-outfit text-primary">The Plug 🔌</h1>
-          <p className="text-muted-foreground font-medium">Get your authentic logs fast-fast and sharp. No stories.</p>
-        </div>
+          <div>
+            <h1 className="text-3xl font-black font-outfit text-foreground flex items-center gap-3">
+              Premium Marketplace 🛍️
+            </h1>
+            <p className="text-muted-foreground font-medium mt-1">Explore our high-quality logs and digital assets.</p>
+          </div>
       </div>
 
       {/* Filters & Search */}
@@ -107,6 +109,7 @@ export default function MarketplacePage() {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
+            <option value="All">All Categories</option>
             {categories.map((cat: any) => (
               <option key={cat} value={cat} className="bg-background text-foreground">{cat}</option>
             ))}
@@ -122,8 +125,8 @@ export default function MarketplacePage() {
       ) : error ? (
         <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-red-500/5 border border-red-500/10">
           <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-          <h3 className="text-xl font-bold mb-2 text-red-400">Connection Interrupted</h3>
-          <p className="text-secondary-foreground/50 max-w-sm">Unable to connect to the TLogs marketplace. Please check your network or try again later.</p>
+          <h3 className="text-xl font-bold mb-2 text-red-400">Marketplace Offline</h3>
+          <p className="text-secondary-foreground/60 max-w-sm">We're having trouble reaching the marketplace. Please check back in a few minutes.</p>
         </div>
       ) : filteredServices.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-white/5 border border-white/10">
@@ -153,32 +156,32 @@ export default function MarketplacePage() {
                 
                 <h3 className="text-lg font-bold mb-4 line-clamp-2 leading-tight group-hover:text-primary transition-colors">{service.name}</h3>
                 
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
                   <div className="space-y-1">
-                    <p className="text-2xl font-bold font-mono text-primary">
+                    <p className="text-2xl font-black font-mono text-primary">
                       {formatPrice(service.finalPrice)}
                     </p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Cool Price</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">Pricing</p>
                   </div>
                   <div className="text-right">
                     <p className={cn(
-                      "text-sm font-bold font-mono",
+                      "text-sm font-black font-mono",
                       service.stock > 10 ? "text-emerald-500" : "text-amber-500"
                     )}>
                       {service.stock} Units
                     </p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">In Stock</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">In Stock</p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-white/5 border-t border-white/5">
+              <div className="p-4 bg-muted/50 border-t border-border">
                 <button
                   onClick={() => handleBuy(service)}
-                  className="w-full bg-primary py-3.5 rounded-xl text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-95 shadow-lg neon-glow"
+                  className="w-full bg-gradient-to-r from-primary to-emerald-500 py-3.5 rounded-xl text-primary-foreground font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  Buy Now Sharp-Sharp
+                  Purchase Now
                 </button>
               </div>
             </motion.div>
@@ -211,8 +214,8 @@ export default function MarketplacePage() {
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Purchase Successful!</h2>
-                  <p className="text-secondary-foreground/60 text-sm">Your assets have been delivered. Copy them below.</p>
+                  <h2 className="text-2xl font-black text-foreground mb-2">Congratulations! 🎉</h2>
+                  <p className="text-muted-foreground text-sm font-medium">Purchase successful! Your assets are ready below.</p>
                 </div>
 
                 <div className="bg-black/40 border border-white/10 rounded-2xl p-6 text-left relative group">

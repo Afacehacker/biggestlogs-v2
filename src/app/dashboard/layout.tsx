@@ -25,11 +25,11 @@ import { API_BASE_URL, getApiHeaders } from "@/lib/api-config";
 import { ChatWidget } from "@/components/support/ChatWidget";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "My Base 🏠", href: "/dashboard" },
-  { icon: ShoppingCart, label: "The Plug 🔌", href: "/dashboard/marketplace" },
-  { icon: History, label: "My Logs 📚", href: "/dashboard/orders" },
-  { icon: Wallet, label: "My Money 💰", href: "/dashboard/wallet" },
-  { icon: Settings, label: "Settings ⚙️", href: "/dashboard/profile" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: ShoppingCart, label: "Marketplace", href: "/dashboard/marketplace" },
+  { icon: History, label: "My Orders", href: "/dashboard/orders" },
+  { icon: Wallet, label: "Wallet & Balance", href: "/dashboard/wallet" },
+  { icon: Settings, label: "Settings", href: "/dashboard/profile" },
 ];
 
 const adminItems = [
@@ -113,7 +113,7 @@ export default function DashboardLayout({
 
           {session.user.role === "ADMIN" && (
             <div className="pt-8">
-              <p className={cn("px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground", !isSidebarOpen && "lg:hidden")}>Admin Base (Oga only)</p>
+              <p className={cn("px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60", !isSidebarOpen && "lg:hidden")}>Administration</p>
               {adminItems.map((item) => (
                 <Link
                   key={item.href}
@@ -166,7 +166,7 @@ export default function DashboardLayout({
           <div className="flex items-center space-x-4">
             <Link href="/dashboard/wallet" className="hidden sm:flex flex-col items-end mr-2 hover:opacity-80 transition-opacity">
               <span className="text-sm font-bold text-primary">{formatPrice(profile?.balance || 0)}</span>
-              <span className="text-[10px] text-muted-foreground font-mono">MY BALANCE</span>
+              <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">Available Balance</span>
             </Link>
             <div className="flex items-center space-x-2 bg-muted rounded-full px-4 py-2 border border-border">
               <UserCircle className="h-5 w-5 text-primary" />

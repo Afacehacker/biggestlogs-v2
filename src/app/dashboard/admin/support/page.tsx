@@ -62,18 +62,18 @@ export default function AdminSupportPage() {
   return (
     <div className="h-[calc(100vh-12rem)] flex gap-6">
       {/* Sidebar: Ticket List */}
-      <div className="w-96 flex flex-col glass-dark rounded-3xl border border-white/5 overflow-hidden">
-        <div className="p-6 border-b border-white/5 space-y-4">
+      <div className="w-96 flex flex-col bg-card text-card-foreground rounded-3xl border border-border overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-border space-y-4">
             <h2 className="text-xl font-bold flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-primary" />
-                Support Tickets
+                Complaints & Feedback 🗣️
             </h2>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-secondary-foreground/20" />
                 <input 
                     type="text" 
                     placeholder="Search users..." 
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm"
+                    className="w-full bg-muted border border-border rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
                 />
             </div>
         </div>
@@ -85,9 +85,9 @@ export default function AdminSupportPage() {
                     <p className="text-xs">Loading tickets...</p>
                 </div>
             ) : tickets.length === 0 ? (
-                <div className="p-12 text-center text-secondary-foreground/20">
-                    <p className="text-sm font-bold">Safe Zone</p>
-                    <p className="text-[10px] uppercase tracking-widest mt-1">No active complaints</p>
+                <div className="p-12 text-center text-muted-foreground/50">
+                    <p className="text-sm font-bold">No Wahala 😇</p>
+                    <p className="text-[10px] uppercase tracking-widest mt-1 font-medium">Everywhere soft, nobody dey complain.</p>
                 </div>
             ) : (
                 <div className="divide-y divide-white/5">
@@ -96,8 +96,8 @@ export default function AdminSupportPage() {
                             key={ticket.id}
                             onClick={() => setSelectedTicketId(ticket.id)}
                             className={cn(
-                                "w-full p-4 flex items-start gap-4 hover:bg-white/[0.02] transition-all text-left",
-                                selectedTicketId === ticket.id && "bg-white/[0.05] border-l-2 border-primary"
+                                "w-full p-4 flex items-start gap-4 hover:bg-muted/50 transition-all text-left",
+                                selectedTicketId === ticket.id && "bg-muted border-l-2 border-primary"
                             )}
                         >
                             <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -126,14 +126,14 @@ export default function AdminSupportPage() {
       </div>
 
       {/* Main: Chat Interface */}
-      <div className="flex-1 flex flex-col glass-dark rounded-3xl border border-white/5 overflow-hidden">
+      <div className="flex-1 flex flex-col bg-card text-card-foreground rounded-3xl border border-border overflow-hidden shadow-sm">
         {activeTicket ? (
             <>
                 {/* Chat Header */}
-                <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div className="p-6 border-b border-border flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-white/5 flex items-center justify-center">
-                            <User className="h-6 w-6 text-secondary-foreground/60" />
+                        <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center border border-border">
+                            <User className="h-6 w-6 text-muted-foreground" />
                         </div>
                         <div>
                             <h3 className="font-bold">{activeTicket.user?.name || "User"}</h3>
@@ -150,7 +150,7 @@ export default function AdminSupportPage() {
                                 "max-w-[70%] p-4 rounded-3xl text-sm font-medium",
                                 msg.isAdmin 
                                     ? "bg-primary text-primary-foreground rounded-tr-none shadow-xl shadow-primary/10" 
-                                    : "bg-white/5 text-white rounded-tl-none border border-white/10"
+                                    : "bg-muted text-foreground rounded-tl-none border border-border"
                             )}>
                                 {msg.text}
                             </div>
@@ -162,7 +162,7 @@ export default function AdminSupportPage() {
                 </div>
 
                 {/* Reply Area */}
-                <div className="p-6 bg-black/20 border-t border-white/5">
+                <div className="p-6 bg-muted/30 border-t border-border">
                     <div className="relative flex items-center gap-4">
                         <input 
                             type="text" 
@@ -170,7 +170,7 @@ export default function AdminSupportPage() {
                             onChange={(e) => setReply(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                             placeholder="Type response to user..."
-                            className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all font-medium"
+                            className="flex-1 bg-card border border-border rounded-2xl px-6 py-4 focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all font-medium text-foreground"
                         />
                         <button 
                             onClick={handleSend}

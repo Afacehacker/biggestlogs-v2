@@ -8,6 +8,8 @@ import connectDB from './mongodb';
 import User from './models/User';
 import Log from './models/Log';
 import Transaction from './models/Transaction';
+import Setting from './models/Setting';
+import Ticket from './models/Ticket';
 import axios from 'axios';
 import multer from 'multer';
 import path from 'path';
@@ -40,11 +42,16 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// Ensure uploads directory exists
-const uploadDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
+
+// Multer Setup
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+});
+const upload = multer({ storage });
 
 // Auth Middleware
 const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
@@ -69,6 +76,13 @@ const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
   }
 };
 
+const adminMiddleware = async (req: any, res: Response, next: NextFunction) => {
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ message: "Oga, you no be admin! No enter here." });
+  }
+  next();
+};
+
 // --- Routes ---
 app.get('/', (req, res) => res.send('BIGGESTLOGSV2 Backend Running (MongoDB)'));
 
@@ -85,8 +99,10 @@ app.post('/api/users/login', async (req, res) => {
 
 const getPricingConfig = async () => {
   try {
+    const markupSetting = await Setting.findOne({ key: "MARKUP_PERCENTAGE" });
+    const markupMultiplier = markupSetting ? parseFloat(markupSetting.value) / 100 : 5;
     const conversionRate = parseFloat(process.env.VND_TO_NGN_RATE || "0.06");
-    return { markupMultiplier: 5, conversionRate }; // Assuming default markup since setting isn't imported
+    return { markupMultiplier, conversionRate };
   } catch (e) {
     return { markupMultiplier: 5, conversionRate: 0.06 };
   }
@@ -98,8 +114,33 @@ app.get('/api/user/profile', authMiddleware, async (req: any, res) => {
     ...req.user.toObject(), 
     id: req.user._id, 
     _id: req.user._id, 
-    isAdmin: req.user.role === 'admin' 
+    isAdmin: req.user.role === 'ADMIN' 
   });
+});
+
+// User Deposits (Manual Proof Submission)
+app.post('/api/deposits', authMiddleware, upload.single('screenshot'), async (req: any, res) => {
+  try {
+    const { amount, paymentRef } = req.body;
+    if (!req.file || !amount) {
+      return res.status(400).json({ message: "Amount and screenshot are required" });
+    }
+
+    const deposit = new Transaction({
+      user: req.user._id,
+      amount: parseFloat(amount),
+      type: 'deposit',
+      status: 'pending',
+      description: 'Manual Deposit Verification',
+      paymentRef,
+      screenshotUrl: `/uploads/${req.file.filename}`
+    });
+
+    await deposit.save();
+    res.json({ message: "Proof submitted sharp-sharp! Admin will check soon." });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error submitting deposit", error: error.message });
+  }
 });
 
 // User Orders
@@ -111,6 +152,8 @@ app.get('/api/user/orders', authMiddleware, async (req: any, res) => {
     res.status(500).json({ message: 'Error fetching orders' });
   }
 });
+
+// User Orders
 
 // User Transactions
 app.get('/api/user/transactions', authMiddleware, async (req: any, res) => {
@@ -306,7 +349,170 @@ app.get('/api/accounts', async (req, res) => {
   }
 });
 
-// Socket.io
+// --- Admin Routes ---
+
+app.get('/api/admin/data', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+    const orders = await Transaction.find({ type: 'purchase' }).populate('user').sort({ createdAt: -1 });
+    const deposits = await Transaction.find({ type: 'deposit' }).populate('user').sort({ createdAt: -1 });
+    const settingsList = await Setting.find();
+    
+    // Map settings to and object for easier consumption
+    const settings: any = {};
+    settingsList.forEach(s => settings[s.key] = s.value);
+
+    const stats = {
+      totalUsers: users.length,
+      totalOrders: orders.length,
+      totalPendingDeposits: deposits.filter(d => d.status === 'pending').length,
+    };
+
+    res.json({
+      users: users.map(u => ({ id: u._id, name: u.username, email: u.email, balance: u.balance, role: u.role })),
+      orders: orders.map(o => ({
+        id: o._id,
+        serviceName: o.description.replace('Purchase: ', ''),
+        user: { email: (o.user as any)?.email || 'Unknown' },
+        status: o.status.toUpperCase(),
+        amount: o.amount,
+        basePrice: Math.ceil(o.amount / 5), // Rough estimation if not stored
+        createdAt: o.createdAt
+      })),
+      deposits: deposits.map(d => ({
+        id: d._id,
+        user: { email: (d.user as any)?.email || 'Unknown' },
+        amount: d.amount,
+        status: d.status.toUpperCase(),
+        paymentRef: d.paymentRef,
+        screenshotUrl: d.screenshotUrl,
+        createdAt: d.createdAt
+      })),
+      stats,
+      settings
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: "Admin data error", details: error.message });
+  }
+});
+
+app.post('/api/admin/settings', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const { key, value } = req.body;
+    await Setting.findOneAndUpdate({ key }, { value }, { upsert: true });
+    res.json({ message: "Settings updated sharp-sharp!" });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error updating settings" });
+  }
+});
+
+app.post('/api/admin/users/update', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const { userId, balance, role } = req.body;
+    await User.findByIdAndUpdate(userId, { balance: parseFloat(balance), role });
+    res.json({ message: "User updated successfully. Omo, balance don change!" });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error updating user" });
+  }
+});
+
+app.delete('/api/admin/users/:id', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const { id } = req.params;
+    await User.findByIdAndDelete(id);
+    res.json({ message: "User don clear! Deleted successfully." });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error deleting user" });
+  }
+});
+
+app.post('/api/admin/deposits/action', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const { depositId, action } = req.body;
+    const deposit = await Transaction.findById(depositId).populate('user');
+    
+    if (!deposit || deposit.type !== 'deposit') return res.status(404).json({ message: "Deposit not found" });
+    if (deposit.status !== 'pending') return res.status(400).json({ message: "This one don finish already." });
+
+    if (action === 'APPROVE') {
+      deposit.status = 'completed';
+      const user = await User.findById(deposit.user);
+      if (user) {
+        user.balance += deposit.amount;
+        await user.save();
+      }
+    } else {
+      deposit.status = 'failed';
+    }
+
+    await deposit.save();
+    res.json({ message: `Deposit ${action === 'APPROVE' ? 'Approved' : 'Rejected'} sharp-sharp!` });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error processing deposit action" });
+  }
+});
+
+// --- Existing Routes Continued ---
+// --- Admin Routes Continued ---
+
+app.get('/api/admin/tickets', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const tickets = await Ticket.find().populate('user').sort({ updatedAt: -1 });
+    res.json(tickets.map(t => ({
+      id: t._id,
+      user: { name: (t.user as any)?.username, email: (t.user as any)?.email },
+      subject: t.subject,
+      status: t.status,
+      updatedAt: t.updatedAt,
+      messages: t.messages.map((m: any) => ({ ...m, id: m._id }))
+    })));
+  } catch (error: any) {
+    res.status(500).json({ message: "Admin tickets error" });
+  }
+});
+
+app.post('/api/support/tickets/:id/messages', [authMiddleware], async (req: any, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { text, isAdmin } = req.body;
+    const ticket = await Ticket.findById(id);
+
+    if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
+    ticket.messages.push({ text, isAdmin: !!isAdmin, createdAt: new Date() });
+    await ticket.save();
+
+    res.json({ message: "Message sent sharp-sharp!" });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error sending message" });
+  }
+});
+
+// User Support Routes
+app.post('/api/support/tickets', authMiddleware, async (req: any, res: Response) => {
+  try {
+    const { subject, message } = req.body;
+    const ticket = new Ticket({
+      user: req.user._id,
+      subject,
+      messages: [{ text: message, isAdmin: false, createdAt: new Date() }]
+    });
+    await ticket.save();
+    res.json({ message: "Ticket created! We go follow you talk soon.", ticketId: ticket._id });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error creating ticket" });
+  }
+});
+
+app.get('/api/user/tickets', authMiddleware, async (req: any, res: Response) => {
+  try {
+    const tickets = await Ticket.find({ user: req.user._id }).sort({ updatedAt: -1 });
+    res.json(tickets);
+  } catch (error: any) {
+    res.status(500).json({ message: "Error fetching tickets" });
+  }
+});
+
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
   socket.on('disconnect', () => console.log('Client disconnected'));
