@@ -1,4 +1,6 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
+
 import { getServices } from "@/lib/api-client";
 import { prisma } from "@/lib/prisma";
 
