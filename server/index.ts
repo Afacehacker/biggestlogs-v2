@@ -16,9 +16,15 @@ import bcrypt from 'bcryptjs';
 
 const app = express();
 const httpServer = createServer(app);
+const allowedOrigins = [
+  "https://biggestlogs.vercel.app", 
+  "http://localhost:3000", 
+  "https://biggestlogs-v2-1.onrender.com"
+];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ["*"], // Allow access from Vercel and local
+    origin: allowedOrigins,
     methods: ["GET", "POST"]
   }
 });
@@ -29,7 +35,7 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Middlewares
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
