@@ -130,8 +130,8 @@ app.post('/api/deposits', authMiddleware, upload.single('screenshot'), async (re
     const deposit = new Transaction({
       user: req.user._id,
       amount: parseFloat(amount),
-      type: 'deposit',
-      status: 'pending',
+      type: 'DEPOSIT',
+      status: 'PENDING',
       description: 'Manual Deposit Verification',
       paymentRef,
       screenshotUrl: `/uploads/${req.file.filename}`
@@ -147,7 +147,7 @@ app.post('/api/deposits', authMiddleware, upload.single('screenshot'), async (re
 // User Orders
 app.get('/api/user/orders', authMiddleware, async (req: any, res) => {
   try {
-    const orders = await Transaction.find({ user: req.user._id, type: 'purchase' }).sort({ createdAt: -1 });
+    const orders = await Transaction.find({ user: req.user._id, type: 'DEDUCTION' }).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching orders' });
@@ -234,8 +234,8 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
     const order = new Transaction({
       user: user._id,
       amount: finalPrice,
-      type: 'purchase',
-      status: 'completed',
+      type: 'DEDUCTION',
+      status: 'COMPLETED',
       description: `Purchase: ${targetProduct.name}`,
     });
     await order.save();
@@ -355,8 +355,8 @@ app.get('/api/accounts', async (req, res) => {
 app.get('/api/admin/data', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
-    const orders = await Transaction.find({ type: 'purchase' }).populate('user').sort({ createdAt: -1 });
-    const deposits = await Transaction.find({ type: 'deposit' }).populate('user').sort({ createdAt: -1 });
+    const orders = await Transaction.find({ type: 'DEDUCTION' }).populate('user').sort({ createdAt: -1 });
+    const deposits = await Transaction.find({ type: 'DEPOSIT' }).populate('user').sort({ createdAt: -1 });
     const settingsList = await Setting.find();
     
     // Map settings to and object for easier consumption
@@ -366,7 +366,7 @@ app.get('/api/admin/data', [authMiddleware, adminMiddleware], async (req: any, r
     const stats = {
       totalUsers: users.length,
       totalOrders: orders.length,
-      totalPendingDeposits: deposits.filter(d => d.status === 'pending').length,
+      totalPendingDeposits: deposits.filter(d => d.status === 'PENDING').length,
     };
 
     res.json({
@@ -432,18 +432,18 @@ app.post('/api/admin/deposits/action', [authMiddleware, adminMiddleware], async 
     const { depositId, action } = req.body;
     const deposit = await Transaction.findById(depositId).populate('user');
     
-    if (!deposit || deposit.type !== 'deposit') return res.status(404).json({ message: "Deposit not found" });
-    if (deposit.status !== 'pending') return res.status(400).json({ message: "This one don finish already." });
+    if (!deposit || deposit.type !== 'DEPOSIT') return res.status(404).json({ message: "Deposit not found" });
+    if (deposit.status !== 'PENDING') return res.status(400).json({ message: "This one don finish already." });
 
     if (action === 'APPROVE') {
-      deposit.status = 'completed';
+      deposit.status = 'COMPLETED';
       const user = await User.findById(deposit.user);
       if (user) {
         user.balance += deposit.amount;
         await user.save();
       }
     } else {
-      deposit.status = 'failed';
+      deposit.status = 'FAILED';
     }
 
     await deposit.save();

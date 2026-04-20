@@ -3,8 +3,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface ITransaction extends Document {
   user: mongoose.Types.ObjectId;
   amount: number;
-  type: 'deposit' | 'purchase' | 'refund';
-  status: 'pending' | 'completed' | 'failed';
+  type: 'DEPOSIT' | 'DEDUCTION' | 'REFUND';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
   description: string;
   paymentRef?: string;
   screenshotUrl?: string;
@@ -16,8 +16,8 @@ const TransactionSchema: Schema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     amount: { type: Number, required: true },
-    type: { type: String, enum: ['deposit', 'purchase', 'refund'], required: true },
-    status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+    type: { type: String, enum: ['DEPOSIT', 'DEDUCTION', 'REFUND'], required: true },
+    status: { type: String, enum: ['PENDING', 'COMPLETED', 'FAILED'], default: 'PENDING' },
     description: { type: String },
     paymentRef: { type: String },
     screenshotUrl: { type: String },
