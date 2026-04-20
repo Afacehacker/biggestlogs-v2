@@ -1,5 +1,3 @@
-// Entry point for the Express backend.
-// On Render the build step runs: npm install && npx prisma generate
-// The start step runs: node server.js
+// Entry point for BIGGESTLOGSV2 Express Backend
 require('tsx/cjs');
-require('./server/index.ts');
+require('./server/v2.ts');
