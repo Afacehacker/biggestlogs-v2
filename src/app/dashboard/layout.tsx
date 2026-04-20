@@ -112,8 +112,8 @@ export default function DashboardLayout({
           ))}
 
           {session.user.role === "ADMIN" && (
-            <div className="pt-8">
-              <p className={cn("px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60", !isSidebarOpen && "lg:hidden")}>Administration</p>
+            <div className="pt-8 mb-4">
+              <p className={cn("px-4 mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-red-500/80 antialiased", !isSidebarOpen && "lg:hidden")}>Admin Control Center</p>
               {adminItems.map((item) => (
                 <Link
                   key={item.href}

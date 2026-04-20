@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.id = user.id;
         token.balance = user.balance;
+        token.name = user.username;
       }
       
       if (trigger === "update" && session?.balance !== undefined) {
@@ -70,6 +71,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.balance = token.balance as number;
+        session.user.name = token.name as string;
       }
       return session;
     },
