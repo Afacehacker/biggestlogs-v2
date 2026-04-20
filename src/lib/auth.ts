@@ -42,7 +42,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user._id.toString(),
           email: user.email,
-          username: user.username,
+          name: user.username,
           role: user.role,
           balance: user.balance,
         };
@@ -53,10 +53,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.role = user.role;
+        token.role = (user as any).role;
         token.id = user.id;
-        token.balance = user.balance;
-        token.name = user.username;
+        token.balance = (user as any).balance;
+        token.name = user.name;
       }
       
       if (trigger === "update" && session?.balance !== undefined) {
