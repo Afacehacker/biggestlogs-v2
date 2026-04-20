@@ -168,6 +168,22 @@ app.get('/api/services', async (req, res) => {
         description: p.description || ""
       };
     });
+
+    const getPlatformPriority = (name: string, category: string) => {
+      const text = `${name} ${category}`.toLowerCase();
+      if (text.includes('facebook') || text.match(/\\bfb\\b/)) return 1;
+      if (text.includes('instagram') || text.match(/\\big\\b/)) return 2;
+      if (text.includes('tiktok')) return 3;
+      return 4;
+    };
+
+    normalized.sort((a: any, b: any) => {
+      const priorityA = getPlatformPriority(a.name, a.category);
+      const priorityB = getPlatformPriority(b.name, b.category);
+      if (priorityA !== priorityB) return priorityA - priorityB;
+      return a.finalPrice - b.finalPrice;
+    });
+
     res.json(normalized);
   } catch (error: any) {
     console.error("SERVICES_ERR:", error.message);
@@ -188,7 +204,7 @@ app.get('/api/accounts', async (req, res) => {
       if (cat.products) products.push(...cat.products.map((p:any) => ({...p, cat: cat.name})));
     });
     const { markupMultiplier, conversionRate } = await getPricingConfig();
-    res.json(products.map((p: any) => ({
+    const normalized = products.map((p: any) => ({
       id: String(p.id || p.product_id),
       platform: p.cat || "Other",
       type: "Account",
@@ -198,7 +214,24 @@ app.get('/api/accounts', async (req, res) => {
       image: "https://tlogsmarketplace.com/assets/images/product-placeholder.png",
       badges: [p.cat?.toLowerCase()],
       quality: 100
-    })));
+    }));
+
+    const getPlatformPriority = (title: string, platform: string) => {
+      const text = `${title} ${platform}`.toLowerCase();
+      if (text.includes('facebook') || text.match(/\\bfb\\b/)) return 1;
+      if (text.includes('instagram') || text.match(/\\big\\b/)) return 2;
+      if (text.includes('tiktok')) return 3;
+      return 4;
+    };
+
+    normalized.sort((a: any, b: any) => {
+      const priorityA = getPlatformPriority(a.title, a.platform);
+      const priorityB = getPlatformPriority(b.title, b.platform);
+      if (priorityA !== priorityB) return priorityA - priorityB;
+      return a.price - b.price;
+    });
+
+    res.json(normalized);
   } catch (error: any) { 
     res.status(500).json({message: "API Error", error: error.message}); 
   }
