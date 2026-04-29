@@ -301,12 +301,39 @@ app.get('/api/services', async (req, res) => {
         if (cat.products) cat.products.forEach((p: any) => products.push({ ...p, category_name: cat.name }));
       });
     }
+    const formatProductName = (rawName: string) => {
+      let name = rawName;
+      
+      // Replace country codes
+      name = name.replace(/\[VN\]/gi, '(Vietnam)');
+      name = name.replace(/\[US\]/gi, '(USA)');
+      name = name.replace(/\[UK\]/gi, '(UK)');
+      name = name.replace(/\[PH\]/gi, '(Philippines)');
+      name = name.replace(/\[ID\]/gi, '(Indonesia)');
+      name = name.replace(/\[TH\]/gi, '(Thailand)');
+      name = name.replace(/\[BR\]/gi, '(Brazil)');
+      
+      // Replace common abbreviations
+      name = name.replace(/\bBM\b/gi, 'Business Manager');
+      name = name.replace(/\bMP\b/gi, 'Marketplace');
+      name = name.replace(/\b2FA\b/gi, '2-Factor Auth');
+      name = name.replace(/\bAcc\b/gi, 'Account');
+      name = name.replace(/\bAccs\b/gi, 'Accounts');
+      
+      // Clean up symbols and formatting
+      name = name.replace(/\|/g, '•'); // Replace pipes with bullets
+      name = name.replace(/\s+/g, ' ').trim(); // Fix spacing
+      
+      // Make sure the first letter is capitalized
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    };
+
     const { markupMultiplier, conversionRate } = await getPricingConfig();
     const normalized = products.map((p: any) => {
       const basePrice = parseFloat(p.price || 0) * conversionRate;
       return {
         id: String(p.id || p.product_id),
-        name: p.name || p.product_name,
+        name: formatProductName(p.name || p.product_name),
         category: p.category_name || "Other",
         price: basePrice,
         finalPrice: Math.ceil(basePrice * markupMultiplier),
@@ -349,12 +376,31 @@ app.get('/api/accounts', async (req, res) => {
     if (data.categories) data.categories.forEach((cat: any) => {
       if (cat.products) products.push(...cat.products.map((p:any) => ({...p, cat: cat.name})));
     });
+    const formatProductName = (rawName: string) => {
+      let name = rawName;
+      name = name.replace(/\[VN\]/gi, '(Vietnam)');
+      name = name.replace(/\[US\]/gi, '(USA)');
+      name = name.replace(/\[UK\]/gi, '(UK)');
+      name = name.replace(/\[PH\]/gi, '(Philippines)');
+      name = name.replace(/\[ID\]/gi, '(Indonesia)');
+      name = name.replace(/\[TH\]/gi, '(Thailand)');
+      name = name.replace(/\[BR\]/gi, '(Brazil)');
+      name = name.replace(/\bBM\b/gi, 'Business Manager');
+      name = name.replace(/\bMP\b/gi, 'Marketplace');
+      name = name.replace(/\b2FA\b/gi, '2-Factor Auth');
+      name = name.replace(/\bAcc\b/gi, 'Account');
+      name = name.replace(/\bAccs\b/gi, 'Accounts');
+      name = name.replace(/\|/g, '•');
+      name = name.replace(/\s+/g, ' ').trim();
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    };
+
     const { markupMultiplier, conversionRate } = await getPricingConfig();
     const normalized = products.map((p: any) => ({
       id: String(p.id || p.product_id),
       platform: p.cat || "Other",
       type: "Account",
-      title: p.name || p.product_name,
+      title: formatProductName(p.name || p.product_name),
       price: Math.ceil(parseFloat(p.price || 0) * conversionRate * markupMultiplier),
       stock: parseInt(p.amount || 0),
       image: "https://tlogsmarketplace.com/assets/images/product-placeholder.png",
