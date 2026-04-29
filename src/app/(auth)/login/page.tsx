@@ -46,7 +46,7 @@ export default function LoginPage() {
       {/* Background Decor */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full -z-10">
         <div className="absolute top-[20%] left-[10%] w-[30%] h-[30%] bg-primary/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[20%] right-[10%] w-[30%] h-[30%] bg-emerald-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-[30%] h-[30%] bg-orange-500/10 rounded-full blur-[100px]" />
       </div>
 
       <motion.div
@@ -56,7 +56,7 @@ export default function LoginPage() {
       >
         <div className="bg-card text-card-foreground p-8 rounded-3xl border border-border shadow-2xl">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
+            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-orange-400">
               Welcome Back
             </h1>
             <p className="text-muted-foreground mt-2 font-medium">

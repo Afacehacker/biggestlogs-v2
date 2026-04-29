@@ -113,7 +113,7 @@ export default function AdminSupportPage() {
                                 <p className="text-xs text-secondary-foreground/50 truncate mb-2">{ticket.subject}</p>
                                 <span className={cn(
                                     "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
-                                    ticket.status === "OPEN" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-white/5 text-white/40 border-white/5"
+                                    ticket.status === "OPEN" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" : "bg-white/5 text-white/40 border-white/5"
                                 )}>
                                     {ticket.status}
                                 </span>

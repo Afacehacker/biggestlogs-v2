@@ -44,7 +44,7 @@ export const TelegramPopup = () => {
                         <div className="flex justify-center">
                             <div className="relative">
                                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-                                <div className="relative h-20 w-20 bg-gradient-to-br from-primary to-emerald-600 rounded-3xl flex items-center justify-center rotate-12 group-hover:rotate-0 transition-transform duration-500 shadow-xl">
+                                <div className="relative h-20 w-20 bg-gradient-to-br from-primary to-orange-600 rounded-3xl flex items-center justify-center rotate-12 group-hover:rotate-0 transition-transform duration-500 shadow-xl">
                                     <Send className="h-10 w-10 text-white -mr-1" />
                                 </div>
                             </div>

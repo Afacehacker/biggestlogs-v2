@@ -67,7 +67,7 @@ export const Hero = () => {
                 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] font-outfit"
             >
                 OWN THE <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-emerald-400 to-primary/40 animate-gradient">DIGITAL FRONTIER</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-orange-400 to-primary/40 animate-gradient">DIGITAL FRONTIER</span>
             </motion.h1>
             
             <motion.p 

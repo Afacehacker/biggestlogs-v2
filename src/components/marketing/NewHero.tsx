@@ -9,7 +9,7 @@ export function NewHero() {
     <div className="relative isolate overflow-hidden pt-14 pb-20 lg:pt-24 lg:pb-32 bg-background" id="home">
       {/* Premium Gradient Background Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary to-emerald-800 rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary to-orange-800 rounded-full blur-[100px]" />
       </div>
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
 
@@ -33,7 +33,7 @@ export function NewHero() {
             className="text-5xl md:text-7xl font-black tracking-tighter text-foreground font-outfit leading-[1.1]"
           >
             Premium Digital Services <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
               At Your Fingertips
             </span>
           </motion.h1>

@@ -78,8 +78,8 @@ export default function DashboardPage() {
       label: "Total Expenditure", 
       value: formatPrice(totalSpent), 
       icon: ShoppingCart, 
-      color: "text-emerald-500",
-      bg: "bg-emerald-500/10"
+      color: "text-orange-500",
+      bg: "bg-orange-500/10"
     },
     { 
       label: "Success Rate", 
@@ -163,7 +163,7 @@ export default function DashboardPage() {
                       <td className="px-6 py-4">
                         <span className={cn(
                           "text-[10px] font-bold px-2 py-1 rounded-full border uppercase",
-                          order.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                          order.status === "COMPLETED" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" : 
                           "bg-amber-500/10 text-amber-500 border-amber-500/20"
                         )}>
                           {order.status}
@@ -194,7 +194,7 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <h3 className="text-xl font-bold">Quick Actions</h3>
           <div className="space-y-4">
-            <Link href="/dashboard/wallet" className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-primary to-emerald-600 p-6 text-primary-foreground hover:scale-[1.02] transition-all neon-glow shadow-lg">
+            <Link href="/dashboard/wallet" className="w-full h-24 flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-primary to-orange-600 p-6 text-primary-foreground hover:scale-[1.02] transition-all neon-glow shadow-lg">
               <Wallet className="h-6 w-6" />
               <span className="font-bold">Add Money</span>
             </Link>

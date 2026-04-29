@@ -163,8 +163,8 @@ export const ChatWidget = () => {
                                         {view === "faq" ? "Support Terminal" : view === "orders" ? "Select Order" : "Secure Channel"}
                                     </h4>
                                     <div className="flex items-center gap-1">
-                                        <div className="h-1 w-1 rounded-full bg-emerald-500" />
-                                        <span className="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Active Link</span>
+                                        <div className="h-1 w-1 rounded-full bg-orange-500" />
+                                        <span className="text-[9px] text-orange-500 font-bold uppercase tracking-wider">Active Link</span>
                                     </div>
                                 </div>
                             </div>

@@ -7,7 +7,7 @@ import { cn, formatPrice } from "@/lib/utils";
 const stats = [
   { label: "Network nodes", value: "50,000+", icon: Users, color: "text-blue-500" },
   { label: "Data packets", value: "1.2M+", icon: ShoppingCart, color: "text-primary" },
-  { label: "System uptime", value: "99.99%", icon: Activity, color: "text-emerald-500" },
+  { label: "System uptime", value: "99.99%", icon: Activity, color: "text-orange-500" },
   { label: "Ping latency", value: "< 2ms", icon: Zap, color: "text-orange-500" },
 ];
 

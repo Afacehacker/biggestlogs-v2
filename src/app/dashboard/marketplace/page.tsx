@@ -180,7 +180,7 @@ export default function MarketplacePage() {
                   <div className="text-right">
                     <p className={cn(
                       "text-sm font-black font-mono",
-                      service.stock > 10 ? "text-emerald-500" : "text-amber-500"
+                      service.stock > 10 ? "text-orange-500" : "text-amber-500"
                     )}>
                       {service.stock} Units
                     </p>
@@ -192,7 +192,7 @@ export default function MarketplacePage() {
               <div className="p-4 bg-muted/50 border-t border-border">
                 <button
                   onClick={() => { setSelectedProduct(service); setQuantity(1); }}
-                  className="w-full bg-gradient-to-r from-primary to-emerald-500 py-3.5 rounded-xl text-primary-foreground font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
+                  className="w-full bg-gradient-to-r from-primary to-orange-500 py-3.5 rounded-xl text-primary-foreground font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
                 >
                   <ShoppingCart className="h-4 w-4" />
                   View & Buy
@@ -277,7 +277,7 @@ export default function MarketplacePage() {
                         <Plus className="h-5 w-5" />
                       </button>
                     </div>
-                    <p className="text-right text-xs font-bold text-emerald-500 mt-2">
+                    <p className="text-right text-xs font-bold text-orange-500 mt-2">
                       {selectedProduct.stock} units available
                     </p>
                   </div>
@@ -295,7 +295,7 @@ export default function MarketplacePage() {
                 <button
                   onClick={handleConfirmPurchase}
                   disabled={quantity < 1 || quantity > selectedProduct.stock}
-                  className="w-full bg-gradient-to-r from-primary to-emerald-500 py-4 rounded-2xl text-primary-foreground font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:pointer-events-none"
+                  className="w-full bg-gradient-to-r from-primary to-orange-500 py-4 rounded-2xl text-primary-foreground font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:pointer-events-none"
                 >
                   <ShoppingCart className="h-5 w-5" />
                   Confirm Purchase
@@ -325,8 +325,8 @@ export default function MarketplacePage() {
             >
               <div className="p-8 space-y-6 text-center">
                 <div className="flex justify-center">
-                  <div className="h-20 w-20 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/50">
-                    <PackageCheck className="h-10 w-10 text-emerald-500" />
+                  <div className="h-20 w-20 rounded-full bg-orange-500/20 flex items-center justify-center border border-orange-500/50">
+                    <PackageCheck className="h-10 w-10 text-orange-500" />
                   </div>
                 </div>
 
@@ -336,7 +336,7 @@ export default function MarketplacePage() {
                 </div>
 
                 <div className="bg-black/40 border border-white/10 rounded-2xl p-6 text-left relative group">
-                  <pre className="text-emerald-400 font-mono text-sm whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
+                  <pre className="text-orange-400 font-mono text-sm whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
                     {typeof purchasedOrder.details === 'string' 
                       ? purchasedOrder.details 
                       : JSON.stringify(purchasedOrder.details, null, 2)}

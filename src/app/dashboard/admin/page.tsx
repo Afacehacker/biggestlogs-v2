@@ -144,7 +144,7 @@ export default function AdminPage() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-bold font-mono text-emerald-500">{formatPrice(deposit.amount)}</td>
+                  <td className="px-6 py-4 font-bold font-mono text-orange-500">{formatPrice(deposit.amount)}</td>
                   <td className="px-6 py-4">
                     {deposit.screenshotUrl ? (
                       <a href={`${API_BASE_URL}${deposit.screenshotUrl}`} target="_blank" className="text-primary hover:underline font-bold text-xs flex items-center gap-1">
@@ -168,7 +168,7 @@ export default function AdminPage() {
                                 queryClient.invalidateQueries({ queryKey: ["adminData"] });
                             }
                           }}
-                          className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500/20 transition-all border border-emerald-500/20"
+                          className="p-2 bg-orange-500/10 text-orange-500 rounded-lg hover:bg-orange-500/20 transition-all border border-orange-500/20"
                         >
                           <CheckCircle2 className="h-4 w-4" />
                         </button>
@@ -192,7 +192,7 @@ export default function AdminPage() {
                     ) : (
                       <span className={cn(
                         "text-[10px] font-bold px-2 py-1 rounded-full",
-                        deposit.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"
+                        deposit.status === "APPROVED" ? "bg-orange-500/10 text-orange-500" : "bg-red-500/10 text-red-500"
                       )}>
                         {deposit.status}
                       </span>
@@ -305,7 +305,7 @@ export default function AdminPage() {
                     <div className="flex items-center gap-2">
                       <div className={cn(
                         "h-2 w-2 rounded-full",
-                        order.status === "COMPLETED" ? "bg-emerald-500" : 
+                        order.status === "COMPLETED" ? "bg-orange-500" : 
                         order.status === "FAILED" ? "bg-red-500" : "bg-amber-500"
                       )}></div>
                       <span className="font-bold text-[11px] uppercase">{order.status}</span>
@@ -313,7 +313,7 @@ export default function AdminPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <span className="text-xs font-bold text-emerald-500">{formatPrice(order.amount)}</span>
+                      <span className="text-xs font-bold text-orange-500">{formatPrice(order.amount)}</span>
                       <span className="text-[9px] text-secondary-foreground/30 uppercase line-through">Base: {formatPrice(order.basePrice)}</span>
                     </div>
                   </td>

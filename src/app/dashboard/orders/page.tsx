@@ -123,7 +123,7 @@ export default function OrdersPage() {
               <div className="flex-1 flex items-center gap-4">
                 <div className={cn(
                   "p-3 rounded-xl shrink-0",
-                  order.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-500" :
+                  order.status === "COMPLETED" ? "bg-orange-500/10 text-orange-500" :
                   order.status === "FAILED" ? "bg-red-500/10 text-red-500" :
                   "bg-amber-500/10 text-amber-500"
                 )}>
@@ -142,7 +142,7 @@ export default function OrdersPage() {
                   <p className="text-[10px] uppercase font-bold text-secondary-foreground/40">Status</p>
                   <span className={cn(
                     "text-[10px] font-bold px-2 py-0.5 rounded-full border",
-                    order.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                    order.status === "COMPLETED" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
                     order.status === "FAILED" ? "bg-red-500/10 text-red-500 border-red-500/20" :
                     "bg-amber-500/10 text-amber-500 border-amber-500/20"
                   )}>
@@ -205,7 +205,7 @@ export default function OrdersPage() {
                 <div className="space-y-4">
                     <p className="text-sm font-bold text-secondary-foreground/60 uppercase tracking-widest">Account Credentials / Data</p>
                     <div className="bg-black/40 rounded-2xl p-6 border border-white/5 relative group">
-                        <pre className="text-emerald-400 font-mono text-sm whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
+                        <pre className="text-orange-400 font-mono text-sm whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
                             {typeof selectedOrder.details === 'string' 
                             ? selectedOrder.details 
                             : JSON.stringify(selectedOrder.details, null, 2)}

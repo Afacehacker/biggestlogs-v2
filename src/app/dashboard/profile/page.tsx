@@ -35,7 +35,7 @@ export default function ProfilePage() {
                 <UserCircle className="h-16 w-16 text-primary" />
               </div>
               <div className="absolute bottom-0 right-0 p-1.5 bg-background rounded-full border border-white/10">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                <ShieldCheck className="h-4 w-4 text-orange-500" />
               </div>
             </div>
             <h3 className="text-xl font-bold">{session.user.name}</h3>
@@ -87,7 +87,7 @@ export default function ProfilePage() {
                 <label className="text-sm font-medium text-secondary-foreground/40 ml-1">Email Address</label>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-secondary-foreground font-medium flex items-center justify-between">
                   <span>{session.user.email}</span>
-                  <Shield className="h-4 w-4 text-emerald-500" />
+                  <Shield className="h-4 w-4 text-orange-500" />
                 </div>
               </div>
             </div>

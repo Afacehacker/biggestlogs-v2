@@ -75,7 +75,7 @@ export const Features = () => {
                 </div>
                 <div className="space-y-4 pt-8">
                   <div className="h-48 bg-white/5 rounded-2xl border border-white/5 p-4 flex flex-col justify-end">
-                     <Zap className="w-8 h-8 text-emerald-400 mb-2" />
+                     <Zap className="w-8 h-8 text-orange-400 mb-2" />
                      <div className="h-3 w-20 bg-white/20 rounded-full mb-2" />
                      <div className="h-2 w-24 bg-white/10 rounded-full" />
                   </div>

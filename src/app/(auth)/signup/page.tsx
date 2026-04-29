@@ -57,7 +57,7 @@ export default function SignupPage() {
       >
         <div className="bg-card text-card-foreground p-8 rounded-3xl border border-border shadow-2xl">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
+            <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-orange-400">
               Create Account
             </h1>
             <p className="text-muted-foreground mt-2 font-medium">

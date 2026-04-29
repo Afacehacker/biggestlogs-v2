@@ -126,7 +126,7 @@ export default function WalletPage() {
         <div className="lg:col-span-2 space-y-12">
           {/* Deposits Section */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-emerald-500">
+            <h3 className="text-xl font-bold flex items-center gap-2 text-orange-500">
               <ArrowDownCircle className="h-5 w-5" />
               Recent Deposits
             </h3>
@@ -146,7 +146,7 @@ export default function WalletPage() {
                       <td className="px-6 py-4">
                         <span className={cn(
                           "text-[10px] font-bold px-2 py-1 rounded-full border",
-                          tx.status === "COMPLETED" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                          tx.status === "COMPLETED" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" : 
                           "bg-amber-500/10 text-amber-500 border-amber-500/20"
                         )}>
                           {tx.status}
@@ -157,7 +157,7 @@ export default function WalletPage() {
                           {new Date(tx.createdAt).toLocaleDateString()}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right font-bold font-mono text-emerald-500">
+                      <td className="px-6 py-4 text-right font-bold font-mono text-orange-500">
                         +{formatPrice(tx.amount)}
                       </td>
                     </tr>
@@ -343,7 +343,7 @@ export default function WalletPage() {
                       <div className="pt-6">
                         <button 
                             onClick={handleDeposit}
-                            className="group relative w-full py-6 bg-gradient-to-r from-primary to-emerald-600 text-primary-foreground font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden shadow-xl shadow-primary/20"
+                            className="group relative w-full py-6 bg-gradient-to-r from-primary to-orange-600 text-primary-foreground font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden shadow-xl shadow-primary/20"
                         >
                             <div className="relative z-10 flex items-center justify-center gap-4">
                                 SUBMIT PROOF
