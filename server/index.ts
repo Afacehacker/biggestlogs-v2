@@ -10,6 +10,7 @@ import Log from './models/Log';
 import Transaction from './models/Transaction';
 import Setting from './models/Setting';
 import Ticket from './models/Ticket';
+import mongoose from 'mongoose';
 import axios from 'axios';
 import multer from 'multer';
 import path from 'path';
@@ -84,6 +85,26 @@ const adminMiddleware = async (req: any, res: Response, next: NextFunction) => {
   next();
 };
 
+const blockedIpSchema = new mongoose.Schema({
+  ip: { type: String, required: true, unique: true },
+  reason: { type: String, default: 'Blocked by Admin' }
+}, { timestamps: true });
+const BlockedIP = mongoose.models.BlockedIP || mongoose.model('BlockedIP', blockedIpSchema);
+
+// Check Blocked IP Middleware
+app.use(async (req, res, next) => {
+  const ip = req.ip || req.connection.remoteAddress;
+  if (ip) {
+    try {
+      const blocked = await BlockedIP.findOne({ ip });
+      if (blocked) {
+        return res.status(403).json({ message: 'Your IP address has been blocked from accessing this site.' });
+      }
+    } catch (e) { console.error(e); }
+  }
+  next();
+});
+
 // --- Routes ---
 app.get('/', (req, res) => res.send('BIGGESTLOGSV2 Backend Running (MongoDB)'));
 
@@ -91,6 +112,10 @@ app.post('/api/users/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user && await bcrypt.compare(password, user.password || '')) {
+    // Track IP
+    user.lastIp = req.ip || req.connection.remoteAddress;
+    await user.save();
+    
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.NEXTAUTH_SECRET || 'biggestlogs_secret_key_v2');
     res.json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role, balance: user.balance } });
   } else {
@@ -456,6 +481,19 @@ app.post('/api/admin/users/update', [authMiddleware, adminMiddleware], async (re
 app.delete('/api/admin/users/:id', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
   try {
     const { id } = req.params;
+    const { blockIp } = req.query;
+    
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (blockIp === 'true' && user.lastIp) {
+        await BlockedIP.findOneAndUpdate(
+            { ip: user.lastIp }, 
+            { reason: `Blocked when deleting user ${user.email}` }, 
+            { upsert: true }
+        );
+    }
+    
     await User.findByIdAndDelete(id);
     res.json({ message: "User don clear! Deleted successfully." });
   } catch (error: any) {
