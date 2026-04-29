@@ -6,6 +6,7 @@ export interface ITransaction extends Document {
   type: 'DEPOSIT' | 'DEDUCTION' | 'REFUND';
   status: 'PENDING' | 'COMPLETED' | 'FAILED';
   description: string;
+  details?: any;
   paymentRef?: string;
   screenshotUrl?: string;
   createdAt: Date;
@@ -19,6 +20,7 @@ const TransactionSchema: Schema = new Schema(
     type: { type: String, enum: ['DEPOSIT', 'DEDUCTION', 'REFUND'], required: true },
     status: { type: String, enum: ['PENDING', 'COMPLETED', 'FAILED'], default: 'PENDING' },
     description: { type: String },
+    details: { type: Schema.Types.Mixed },
     paymentRef: { type: String },
     screenshotUrl: { type: String },
   },

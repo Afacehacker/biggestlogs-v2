@@ -173,7 +173,14 @@ app.post('/api/deposits', authMiddleware, upload.single('screenshot'), async (re
 app.get('/api/user/orders', authMiddleware, async (req: any, res) => {
   try {
     const orders = await Transaction.find({ user: req.user._id, type: 'DEDUCTION' }).sort({ createdAt: -1 });
-    res.json(orders);
+    res.json(orders.map(o => ({
+      id: o._id,
+      serviceName: o.description.replace('Purchase: ', ''),
+      status: o.status,
+      amount: o.amount,
+      createdAt: o.createdAt,
+      details: o.details || 'Credentials not found or manual review required.'
+    })));
   } catch (error) {
     res.status(500).json({ message: 'Error fetching orders' });
   }
@@ -270,6 +277,7 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
       type: 'DEDUCTION',
       status: 'COMPLETED',
       description: `Purchase: ${targetProduct.name} (x${qty})`,
+      details: itemDetails,
     });
     await order.save();
 
