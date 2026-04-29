@@ -1,84 +1,93 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield, Zap, Globe, Lock } from "lucide-react";
-import Image from "next/image";
+import { Shield, Zap, Globe, Lock, ArrowRight, Activity } from "lucide-react";
+import Link from "next/link";
 
 export function NewHero() {
   return (
-    <div className="relative isolate overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-        <div 
-          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-accent opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-          style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}
-        />
+    <div className="relative isolate overflow-hidden pt-14 pb-20 lg:pt-24 lg:pb-32 bg-background" id="home">
+      {/* Premium Gradient Background Elements */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary to-emerald-800 rounded-full blur-[100px]" />
       </div>
+      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
 
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:pt-40">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8"
-        >
-          <div className="mt-24 sm:mt-32 lg:mt-16">
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold leading-6 text-primary ring-1 ring-inset ring-primary/20">
-              Introducing V2 (MongoDB Powered)
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+        <div className="mx-auto max-w-3xl text-center flex flex-col items-center">
+          
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
+          >
+            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+            <span className="text-sm font-medium text-foreground tracking-wide">DIGITAL SOLUTIONS</span>
+          </motion.div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-5xl md:text-7xl font-black tracking-tighter text-foreground font-outfit leading-[1.1]"
+          >
+            Premium Digital Services <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">
+              At Your Fingertips
             </span>
-          </div>
-          <h1 className="mt-10 text-4xl font-black tracking-tight text-foreground sm:text-6xl font-outfit">
-            The Ultimate <span className="text-primary">Premium</span> Marketplace. Verified Only.
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground font-medium">
-            Access high-quality premium accounts and assets instantly. Secure, reliable, and verified logs delivered directly to your dashboard.
-          </p>
-          <div className="mt-10 flex items-center gap-x-6">
-            <a
-              href="/signup"
-              className="rounded-xl bg-primary px-6 py-3 text-sm font-black text-primary-foreground shadow-lg hover:bg-primary/80 transition-all hover:scale-105 neon-glow uppercase tracking-[0.1em]"
-            >
-              Get Started
-            </a>
-            <a href="/login" className="text-sm font-bold leading-6 text-foreground hover:text-primary transition-colors flex items-center gap-2">
-              Sign In <span aria-hidden="true">→</span>
-            </a>
-          </div>
+          </motion.h1>
 
-          <div className="mt-20 grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mt-8 text-lg md:text-xl leading-relaxed text-muted-foreground font-medium max-w-2xl"
+          >
+            Get access to cutting-edge digital solutions including verified accounts, data plans, and premium logs. Everything you need in one secure platform.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto"
+          >
+            <Link
+              href="/signup"
+              className="w-full sm:w-auto rounded-2xl bg-primary px-8 py-4 text-base font-black text-primary-foreground shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] transition-all hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest"
+            >
+              REGISTER <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link 
+              href="/login" 
+              className="w-full sm:w-auto rounded-2xl bg-white/5 border border-white/10 px-8 py-4 text-base font-bold text-foreground hover:bg-white/10 transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
+            >
+              LOGIN
+            </Link>
+          </motion.div>
+
+          {/* Quick Stats below hero */}
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-4xl"
+          >
             {[
-              { label: 'Uptime', value: '99.9%', icon: Globe },
-              { label: 'Security', value: 'Verified', icon: Shield },
+              { label: 'Uptime', value: '99.9%', icon: Activity },
+              { label: 'Security', value: '100%', icon: Shield },
               { label: 'Delivery', value: 'Instant', icon: Zap },
-              { label: 'Privacy', value: 'Encrypted', icon: Lock },
+              { label: 'Global', value: 'Access', icon: Globe },
             ].map((stat) => (
-              <div key={stat.label} className="flex flex-col gap-2">
-                <stat.icon className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-bold text-foreground tracking-tight">{stat.value}</span>
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
+              <div key={stat.label} className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/5 border border-white/5 backdrop-blur-sm">
+                <stat.icon className="h-6 w-6 text-primary mb-3" />
+                <span className="text-2xl md:text-3xl font-black text-foreground font-mono">{stat.value}</span>
+                <span className="text-sm text-muted-foreground font-medium uppercase tracking-wider mt-1">{stat.label}</span>
               </div>
             ))}
-          </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32"
-        >
-          <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-            <div className="rounded-xl bg-gray-900/50 p-2 ring-1 ring-white/10 glass-dark">
-              <img
-                src="/hero-preview.png"
-                alt="App screenshot"
-                width={2432}
-                height={1442}
-                className="w-[76rem] rounded-md shadow-2xl ring-1 ring-white/10"
-              />
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

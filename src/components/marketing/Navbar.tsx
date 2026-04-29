@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, LogIn, LogOut, Menu, UserCircle, Wallet, Plus, Moon, Sun } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, Wallet, Plus, Moon, Sun, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn, formatPrice } from "@/lib/utils";
 import { API_BASE_URL, getApiHeaders } from "@/lib/api-config";
@@ -12,6 +12,15 @@ export const Navbar = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const theme = localStorage.getItem("theme");
@@ -49,95 +58,100 @@ export const Navbar = () => {
   });
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/50 backdrop-blur-lg">
+    <nav className={cn(
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+      scrolled ? "bg-background/80 backdrop-blur-xl border-b border-white/5 py-2" : "bg-transparent py-4"
+    )}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-14 items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold tracking-tighter text-primary">
-                BIGGEST<span className="text-foreground">LOGS</span> ⚡
+              <span className="text-2xl font-black font-outfit tracking-tighter text-foreground">
+                BIGGEST<span className="text-primary">LOGS</span>
               </span>
             </Link>
           </div>
 
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              <Link href="/#features" className="text-secondary-foreground/70 hover:text-primary transition-colors px-3 py-2 text-sm font-medium">
+          <div className="hidden md:flex flex-1 justify-center">
+            <div className="flex items-center space-x-8">
+              <Link href="/#home" className="text-sm font-bold text-foreground hover:text-primary transition-colors">
+                Home
+              </Link>
+              <Link href="/#services" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+                Services
+              </Link>
+              <Link href="/#features" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
                 Features
               </Link>
-              <Link href="/#stats" className="text-secondary-foreground/70 hover:text-primary transition-colors px-3 py-2 text-sm font-medium">
-                Stats
+              <Link href="/dashboard/marketplace" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+                All Services
               </Link>
             </div>
           </div>
 
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6 space-x-4">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-xl bg-muted border border-border hover:bg-muted/80 transition-all text-foreground"
-              >
-                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </button>
-              {session ? (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center space-x-2 text-sm font-medium text-secondary-foreground hover:text-primary transition-colors"
-                  >
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                  <Link
-                    href="/dashboard/wallet"
-                    className="flex items-center space-x-2 bg-primary/10 hover:bg-primary/20 rounded-full px-4 py-1.5 border border-primary/20 transition-all group neon-glow"
-                  >
-                    <Wallet className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-bold text-primary">
-                      {formatPrice(profile?.balance || 0)}
-                    </span>
-                    <Plus className="h-3 w-3 text-primary opacity-50" />
-                  </Link>
-                  <button
-                    onClick={() => signOut()}
-                    className="flex items-center space-x-2 text-sm font-bold text-red-500 hover:text-red-400 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Sign Out</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-sm font-medium text-secondary-foreground hover:text-primary transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-all neon-glow"
-                  >
-                    Get Started
-                  </Link>
-                </>
-              )}
-            </div>
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-white/5 transition-all text-muted-foreground hover:text-foreground"
+            >
+              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+            {session ? (
+              <>
+                <Link
+                  href="/dashboard/wallet"
+                  className="flex items-center space-x-2 bg-primary/10 hover:bg-primary/20 rounded-full px-4 py-1.5 border border-primary/20 transition-all group"
+                >
+                  <Wallet className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-bold text-primary">
+                    {formatPrice(profile?.balance || 0)}
+                  </span>
+                  <Plus className="h-3 w-3 text-primary opacity-50" />
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="flex items-center space-x-2 text-sm font-bold text-foreground hover:text-primary transition-colors px-3"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span>Dashboard</span>
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-bold text-foreground hover:text-primary transition-colors px-4"
+                >
+                  LOGIN
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] flex items-center gap-2 uppercase tracking-wide"
+                >
+                  REGISTER <ArrowRight className="w-4 h-4" />
+                </Link>
+              </>
+            )}
           </div>
 
-          <div className="-mr-2 flex md:hidden items-center gap-3">
+          <div className="flex md:hidden items-center gap-3">
             <button
                 onClick={toggleTheme}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 text-secondary-foreground"
+                className="p-2 rounded-full text-muted-foreground"
             >
                 {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
             {session && (
                <Link
                 href="/dashboard/wallet"
-                className="flex items-center space-x-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20"
+                className="flex items-center space-x-1 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20"
               >
-                <Wallet className="h-4 w-4 text-primary" />
                 <span className="text-xs font-bold text-primary">
                   {formatPrice(profile?.balance || 0)}
                 </span>
@@ -145,7 +159,7 @@ export const Navbar = () => {
             )}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-secondary-foreground hover:bg-secondary hover:text-primary transition-colors"
+              className="inline-flex items-center justify-center p-2 text-foreground"
             >
               <Menu className="h-6 w-6" />
             </button>
@@ -154,46 +168,42 @@ export const Navbar = () => {
       </div>
 
       {/* Mobile menu */}
-      <div className={cn("md:hidden bg-black/95 transition-all overflow-hidden", isOpen ? "h-[320px]" : "h-0")}>
-        <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-          <Link href="/#features" className="block rounded-md px-3 py-2 text-base font-medium text-secondary-foreground hover:bg-secondary hover:text-primary" onClick={() => setIsOpen(false)}>
+      <div className={cn("md:hidden bg-background/95 backdrop-blur-xl border-b border-white/5 transition-all overflow-hidden", isOpen ? "max-h-[400px] border-t" : "max-h-0")}>
+        <div className="space-y-1 px-4 pb-6 pt-4">
+          <Link href="/#home" className="block rounded-lg px-3 py-3 text-base font-bold text-foreground hover:bg-white/5" onClick={() => setIsOpen(false)}>
+            Home
+          </Link>
+          <Link href="/#services" className="block rounded-lg px-3 py-3 text-base font-bold text-muted-foreground hover:bg-white/5" onClick={() => setIsOpen(false)}>
+            Services
+          </Link>
+          <Link href="/#features" className="block rounded-lg px-3 py-3 text-base font-bold text-muted-foreground hover:bg-white/5" onClick={() => setIsOpen(false)}>
             Features
           </Link>
-          <Link href="/#stats" className="block rounded-md px-3 py-2 text-base font-medium text-secondary-foreground hover:bg-secondary hover:text-primary" onClick={() => setIsOpen(false)}>
-            Stats
+          <Link href="/dashboard/marketplace" className="block rounded-lg px-3 py-3 text-base font-bold text-muted-foreground hover:bg-white/5" onClick={() => setIsOpen(false)}>
+            All Services
           </Link>
           {session ? (
-            <>
-              <div className="px-3 py-4 border-t border-white/5 mt-2">
-                <p className="text-[10px] font-bold text-secondary-foreground/20 uppercase tracking-[0.2em] mb-3">Your Account</p>
-                <Link href="/dashboard/wallet" className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20 mb-2" onClick={() => setIsOpen(false)}>
-                  <div className="flex items-center gap-3">
-                    <Wallet className="h-5 w-5 text-primary" />
-                    <span className="font-bold text-primary">Wallet Balance</span>
-                  </div>
-                  <span className="font-mono font-bold text-primary">{formatPrice(profile?.balance || 0)}</span>
-                </Link>
-                <Link href="/dashboard" className="flex items-center gap-3 p-3 text-secondary-foreground/60" onClick={() => setIsOpen(false)}>
-                  <LayoutDashboard className="h-5 w-5" />
-                  <span className="font-medium">Dashboard</span>
-                </Link>
-              </div>
+            <div className="pt-4 mt-2 border-t border-white/5 space-y-2">
+              <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-lg text-foreground font-bold hover:bg-white/5" onClick={() => setIsOpen(false)}>
+                <LayoutDashboard className="h-5 w-5 text-primary" />
+                Dashboard
+              </Link>
               <button
                 onClick={() => signOut()}
-                className="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-red-500 hover:bg-secondary"
+                className="flex items-center gap-3 w-full text-left rounded-lg p-3 font-bold text-red-500 hover:bg-red-500/10"
               >
-                Logout
+                <LogOut className="h-5 w-5" /> Logout
               </button>
-            </>
+            </div>
           ) : (
-            <>
-              <Link href="/login" className="block rounded-md px-3 py-2 text-base font-medium text-secondary-foreground hover:bg-secondary hover:text-primary" onClick={() => setIsOpen(false)}>
-                Sign In
+            <div className="pt-4 mt-2 border-t border-white/5 space-y-3">
+              <Link href="/login" className="block w-full text-center rounded-xl bg-white/5 px-3 py-3 text-base font-bold text-foreground" onClick={() => setIsOpen(false)}>
+                LOGIN
               </Link>
-              <Link href="/signup" className="block rounded-md px-3 py-2 text-base font-medium text-primary hover:bg-secondary" onClick={() => setIsOpen(false)}>
-                Get Started
+              <Link href="/signup" className="block w-full text-center rounded-xl bg-primary px-3 py-3 text-base font-bold text-primary-foreground uppercase tracking-wide" onClick={() => setIsOpen(false)}>
+                REGISTER
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>
