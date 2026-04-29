@@ -15,7 +15,10 @@ import {
   X,
   Copy,
   CheckCircle2,
-  PackageCheck
+  PackageCheck,
+  Plus,
+  Minus,
+  Info
 } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -33,6 +36,8 @@ export default function MarketplacePage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [purchasedOrder, setPurchasedOrder] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [quantity, setQuantity] = useState<number>(1);
   
   const queryClient = useQueryClient();
   const { data: session } = useSession();
@@ -50,15 +55,21 @@ export default function MarketplacePage() {
     return matchesSearch && matchesCategory;
   });
 
-  const handleBuy = async (service: any) => {
+  const handleConfirmPurchase = async () => {
     if (!session?.user?.id) return toast.error("Please login first");
+    if (!selectedProduct) return;
+
+    let finalQty = Math.floor(quantity);
+    if (isNaN(finalQty) || finalQty < 1) finalQty = 1;
+    if (finalQty > 1000) finalQty = 1000;
+    if (finalQty > selectedProduct.stock) finalQty = selectedProduct.stock;
     
     try {
       toast.loading("Processing order...", { id: "order" });
       const res = await fetch(`${API_BASE_URL}/api/orders`, {
         method: "POST",
         headers: getApiHeaders(session.user.id),
-        body: JSON.stringify({ serviceId: service.id }),
+        body: JSON.stringify({ serviceId: selectedProduct.id, quantity: finalQty }),
       });
 
       const data = await res.json();
@@ -66,9 +77,12 @@ export default function MarketplacePage() {
       if (!res.ok) throw new Error(data.message || "Failed to place order");
 
       toast.success("Order placed successfully!", { id: "order" });
+      setSelectedProduct(null);
       setPurchasedOrder(data.order);
       // Refresh balance in navbar/header
       queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      // Refresh services to update stock
+      queryClient.invalidateQueries({ queryKey: ["services"] });
     } catch (err: any) {
       toast.error(err.message, { id: "order" });
     }
@@ -177,17 +191,120 @@ export default function MarketplacePage() {
 
               <div className="p-4 bg-muted/50 border-t border-border">
                 <button
-                  onClick={() => handleBuy(service)}
+                  onClick={() => { setSelectedProduct(service); setQuantity(1); }}
                   className="w-full bg-gradient-to-r from-primary to-emerald-500 py-3.5 rounded-xl text-primary-foreground font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  Purchase Now
+                  View & Buy
                 </button>
               </div>
             </motion.div>
           ))}
         </div>
       )}
+
+      {/* Product Detail & Quantity Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProduct(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-lg bg-card rounded-[2rem] border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="p-6 md:p-8 flex-1 overflow-y-auto">
+                <div className="flex justify-between items-start mb-6">
+                  <span className="text-xs font-bold uppercase tracking-wider px-3 py-1.5 bg-primary/10 text-primary rounded-full border border-primary/20">
+                    {selectedProduct.category}
+                  </span>
+                  <button 
+                    onClick={() => setSelectedProduct(null)}
+                    className="p-2 bg-muted rounded-full hover:bg-secondary transition-colors"
+                  >
+                    <X className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                </div>
+                
+                <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 font-outfit leading-tight">
+                  {selectedProduct.name}
+                </h2>
+                
+                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 mb-6 flex gap-3 text-sm text-foreground leading-relaxed">
+                  <Info className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <p>
+                    {selectedProduct.description || "Premium quality digital asset. Guaranteed to work seamlessly. You will receive instant automated delivery to your dashboard upon successful payment."}
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                      Quantity (Max 1000)
+                    </label>
+                    <div className="flex items-center gap-4 bg-muted/50 p-2 rounded-2xl border border-border">
+                      <button 
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-12 h-12 flex items-center justify-center bg-card rounded-xl border border-border hover:border-primary transition-colors text-foreground"
+                      >
+                        <Minus className="h-5 w-5" />
+                      </button>
+                      <input 
+                        type="number" 
+                        min={1} 
+                        max={Math.min(1000, selectedProduct.stock)} 
+                        value={quantity}
+                        onChange={(e) => {
+                          let val = parseInt(e.target.value);
+                          if (isNaN(val)) val = 1;
+                          if (val > 1000) val = 1000;
+                          if (val > selectedProduct.stock) val = selectedProduct.stock;
+                          setQuantity(val);
+                        }}
+                        className="flex-1 bg-transparent text-center text-2xl font-black text-foreground focus:outline-none font-mono"
+                      />
+                      <button 
+                        onClick={() => setQuantity(Math.min(Math.min(1000, selectedProduct.stock), quantity + 1))}
+                        className="w-12 h-12 flex items-center justify-center bg-card rounded-xl border border-border hover:border-primary transition-colors text-foreground"
+                      >
+                        <Plus className="h-5 w-5" />
+                      </button>
+                    </div>
+                    <p className="text-right text-xs font-bold text-emerald-500 mt-2">
+                      {selectedProduct.stock} units available
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
+                    <span className="text-sm font-bold text-primary uppercase tracking-wider">Total Price</span>
+                    <span className="text-3xl font-black text-primary font-mono">
+                      {formatPrice(selectedProduct.finalPrice * quantity)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 md:p-8 bg-muted/50 border-t border-border mt-auto">
+                <button
+                  onClick={handleConfirmPurchase}
+                  disabled={quantity < 1 || quantity > selectedProduct.stock}
+                  className="w-full bg-gradient-to-r from-primary to-emerald-500 py-4 rounded-2xl text-primary-foreground font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Confirm Purchase
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Success Asset Modal */}
       <AnimatePresence>

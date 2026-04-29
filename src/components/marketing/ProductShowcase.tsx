@@ -20,9 +20,48 @@ export function ProductShowcase() {
     queryFn: fetchMarketplaceServices,
   });
 
-  // Limit to 6 for the homepage showcase
-  const displayServices = services.slice(0, 6);
+  const getDisplayServices = (allServices: any[]) => {
+    const inStock = allServices.filter(s => s.stock > 0);
+    
+    const getCheapest = (keyword: string) => {
+      const matches = inStock.filter(s => 
+        (s.name && s.name.toLowerCase().includes(keyword)) || 
+        (s.category && s.category.toLowerCase().includes(keyword))
+      );
+      if (matches.length === 0) return null;
+      return matches.reduce((prev, curr) => prev.finalPrice < curr.finalPrice ? prev : curr);
+    };
 
+    const fb = getCheapest('facebook');
+    const ig = getCheapest('instagram');
+    const tt = getCheapest('tiktok');
+
+    const selectedIds = new Set([fb?.id, ig?.id, tt?.id].filter(Boolean));
+    const selected = [fb, ig, tt].filter(Boolean);
+
+    // Fill the rest up to 6
+    for (const s of inStock) {
+      if (selected.length >= 6) break;
+      if (!selectedIds.has(s.id)) {
+        selected.push(s);
+        selectedIds.add(s.id);
+      }
+    }
+    
+    // If we still don't have 6 (e.g. not enough in-stock), fill with out-of-stock
+    if (selected.length < 6) {
+        for (const s of allServices) {
+            if (selected.length >= 6) break;
+            if (!selectedIds.has(s.id)) {
+                selected.push(s);
+                selectedIds.add(s.id);
+            }
+        }
+    }
+    return selected;
+  };
+
+  const displayServices = getDisplayServices(services);
   return (
     <section className="py-24 bg-background relative z-10" id="services">
       <div className="absolute inset-0 bg-primary/5 [mask-image:radial-gradient(ellipse_at_center,black,transparent)] pointer-events-none" />

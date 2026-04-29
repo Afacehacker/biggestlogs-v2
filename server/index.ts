@@ -194,7 +194,13 @@ app.get('/api/user/transactions', authMiddleware, async (req: any, res) => {
 // Create Order (Marketplace)
 app.post('/api/orders', authMiddleware, async (req: any, res) => {
   try {
-    const { serviceId } = req.body;
+    const { serviceId, quantity = 1 } = req.body;
+    const qty = parseInt(quantity);
+    
+    if (isNaN(qty) || qty < 1 || qty > 1000) {
+      return res.status(400).json({ message: "Invalid quantity. You can buy between 1 and 1000 pieces." });
+    }
+
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "Omo, we can't find your profile oh!" });
 
@@ -218,14 +224,15 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
     const { markupMultiplier, conversionRate } = await getPricingConfig();
     const basePrice = parseFloat(targetProduct.price || 0) * conversionRate;
     const finalPrice = Math.ceil(basePrice * markupMultiplier);
+    const totalPrice = finalPrice * qty;
     const stockAvailable = parseInt(targetProduct.amount || 0);
 
-    if (stockAvailable <= 0) return res.status(400).json({ message: "Stock don finish! Wait make we restock." });
+    if (stockAvailable < qty) return res.status(400).json({ message: `Stock don finish! Only ${stockAvailable} remaining. Reduce quantity.` });
 
     // 2. Check Balance
-    if (user.balance < finalPrice) {
+    if (user.balance < totalPrice) {
       return res.status(400).json({ 
-        message: `Insufficient funds! You need ₦${finalPrice.toLocaleString()}, but your balance na ₦${user.balance.toLocaleString()}. Abeg top up your wallet!` 
+        message: `Insufficient funds! You need ₦${totalPrice.toLocaleString()}, but your balance na ₦${user.balance.toLocaleString()}. Abeg top up your wallet!` 
       });
     }
 
@@ -233,7 +240,7 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
     const formData = new URLSearchParams();
     formData.append("action", "buyProduct");
     formData.append("id", serviceId);
-    formData.append("amount", "1");
+    formData.append("amount", String(qty));
     formData.append("api_key", TLOGS_API_KEY as string);
 
     // Some APIs use buy_product.php, others use buy_product
@@ -253,15 +260,15 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
     const itemDetails = buyRes.data.data || buyRes.data.details || buyRes.data.msg;
 
     // 4. Deduct Balance and Save Transaction
-    user.balance -= finalPrice;
+    user.balance -= totalPrice;
     await user.save();
 
     const order = new Transaction({
       user: user._id,
-      amount: finalPrice,
+      amount: totalPrice,
       type: 'DEDUCTION',
       status: 'COMPLETED',
-      description: `Purchase: ${targetProduct.name}`,
+      description: `Purchase: ${targetProduct.name} (x${qty})`,
     });
     await order.save();
 
