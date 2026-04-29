@@ -407,6 +407,42 @@ app.post('/api/admin/settings', [authMiddleware, adminMiddleware], async (req: a
   }
 });
 
+// Settings API for Frontend
+app.get('/api/settings', async (req: any, res: Response) => {
+  try {
+    const settingsList = await Setting.find();
+    const settings: any = {
+      bankName: 'Rubies Microfinance Bank',
+      accountName: 'Afeez Salaudeen',
+      accountNumber: '8025329616',
+      telegramLink: 'https://t.me/boostnaija1'
+    };
+    
+    settingsList.forEach(s => {
+      settings[s.key] = s.value;
+    });
+    
+    res.json(settings);
+  } catch (error: any) {
+    res.status(500).json({ message: "Error fetching settings" });
+  }
+});
+
+app.put('/api/settings', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
+  try {
+    const { bankName, accountName, accountNumber, telegramLink } = req.body;
+    
+    if (bankName !== undefined) await Setting.findOneAndUpdate({ key: 'bankName' }, { value: bankName }, { upsert: true });
+    if (accountName !== undefined) await Setting.findOneAndUpdate({ key: 'accountName' }, { value: accountName }, { upsert: true });
+    if (accountNumber !== undefined) await Setting.findOneAndUpdate({ key: 'accountNumber' }, { value: accountNumber }, { upsert: true });
+    if (telegramLink !== undefined) await Setting.findOneAndUpdate({ key: 'telegramLink' }, { value: telegramLink }, { upsert: true });
+    
+    res.json({ message: "Settings updated successfully" });
+  } catch (error: any) {
+    res.status(500).json({ message: "Error updating settings" });
+  }
+});
+
 app.post('/api/admin/users/update', [authMiddleware, adminMiddleware], async (req: any, res: Response) => {
   try {
     const { userId, balance, role } = req.body;
