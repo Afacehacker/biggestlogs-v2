@@ -120,6 +120,20 @@ export function ProductShowcase() {
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
+                {/* Badges */}
+                <div className="absolute top-6 right-6 flex flex-col gap-2 items-end z-10">
+                  {index < 2 && (
+                    <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse">
+                      Hot 🔥
+                    </span>
+                  )}
+                  {service.stock > 0 && service.stock < 15 && (
+                    <span className="px-2.5 py-1 rounded-full bg-orange-500/20 text-orange-400 text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
+                      Only {service.stock} left
+                    </span>
+                  )}
+                </div>
+
                 <div className="p-8">
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform duration-500">
                     <Zap className="w-6 h-6 text-primary" />

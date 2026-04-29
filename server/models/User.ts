@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email?: string;
   password?: string;
   balance: number;
+  totalSpent: number;
   role: 'USER' | 'ADMIN';
   lastIp?: string;
   createdAt: Date;
@@ -17,6 +18,7 @@ const UserSchema: Schema = new Schema(
     email: { type: String, unique: true, sparse: true },
     password: { type: String },
     balance: { type: Number, default: 0 },
+    totalSpent: { type: Number, default: 0 },
     role: { type: String, enum: ['USER', 'ADMIN'], default: 'USER' },
     lastIp: { type: String },
   },

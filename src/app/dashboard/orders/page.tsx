@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Loader2,
   Copy,
-  X
+  X,
+  Download
 } from "lucide-react";
 import { useState } from "react";
 import { cn, formatPrice } from "@/lib/utils";
@@ -54,6 +55,29 @@ export default function OrdersPage() {
     toast.success("Copied to clipboard!");
   };
 
+  const handleBulkExport = () => {
+    const completedOrders = filteredOrders.filter((o: any) => o.status === "COMPLETED");
+    if (completedOrders.length === 0) {
+      toast.error("No completed orders to export!");
+      return;
+    }
+
+    const exportData = completedOrders
+      .map((o: any) => `Order ID: ${o.id}\nProduct: ${o.serviceName}\nDate: ${new Date(o.createdAt).toLocaleString()}\nDetails:\n${typeof o.details === 'string' ? o.details : JSON.stringify(o.details, null, 2)}\n------------------------\n`)
+      .join("\n");
+      
+    const blob = new Blob([exportData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `biggestlogs_export_${new Date().getTime()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Orders exported successfully!");
+  };
+
   return (
     <div className="space-y-8 pb-20">
       <div>
@@ -66,10 +90,17 @@ export default function OrdersPage() {
         <input
           type="text"
           placeholder="Search by product name or order ID..."
-          className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono text-sm"
+          className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-10 pr-32 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono text-sm"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <button 
+          onClick={handleBulkExport}
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors"
+        >
+          <Download className="h-4 w-4" />
+          Export
+        </button>
       </div>
 
       {isLoading ? (

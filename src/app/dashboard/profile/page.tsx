@@ -41,9 +41,22 @@ export default function ProfilePage() {
             <h3 className="text-xl font-bold">{session.user.name}</h3>
             <p className="text-sm text-secondary-foreground/40 font-mono mb-6">{session.user.email}</p>
             
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
-              {session.user.role} Status
-            </span>
+            <div className="flex gap-2 justify-center flex-wrap">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
+                {session.user.role} Status
+              </span>
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                (session.user.totalSpent || 0) >= 500 ? "text-blue-400 bg-blue-400/10 border-blue-400/20 shadow-[0_0_10px_rgba(96,165,250,0.3)]" :
+                (session.user.totalSpent || 0) >= 200 ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/20 shadow-[0_0_10px_rgba(250,204,21,0.3)]" :
+                (session.user.totalSpent || 0) >= 50 ? "text-slate-300 bg-slate-300/10 border-slate-300/20" :
+                "text-orange-700 bg-orange-700/10 border-orange-700/20"
+              }`}>
+                {(session.user.totalSpent || 0) >= 500 ? "Diamond VIP" :
+                 (session.user.totalSpent || 0) >= 200 ? "Gold VIP" :
+                 (session.user.totalSpent || 0) >= 50 ? "Silver VIP" :
+                 "Bronze Member"}
+              </span>
+            </div>
           </div>
 
           <button

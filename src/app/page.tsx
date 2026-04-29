@@ -4,6 +4,7 @@ import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { Features } from "@/components/marketing/Features";
 import { Footer } from "@/components/marketing/Footer";
 import { TelegramPopup } from "@/components/marketing/TelegramPopup";
+import { LivePurchasePopup } from "@/components/marketing/LivePurchasePopup";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <NewHero />
       <ProductShowcase />
       <TelegramPopup />
+      <LivePurchasePopup />
       <Features />
       <Footer />
     </main>

@@ -261,6 +261,7 @@ app.post('/api/orders', authMiddleware, async (req: any, res) => {
 
     // 4. Deduct Balance and Save Transaction
     user.balance -= totalPrice;
+    user.totalSpent = (user.totalSpent || 0) + totalPrice;
     await user.save();
 
     const order = new Transaction({

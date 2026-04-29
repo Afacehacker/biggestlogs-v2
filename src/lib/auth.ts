@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
           name: user.username,
           role: user.role,
           balance: user.balance,
+          totalSpent: user.totalSpent || 0,
         };
       },
 
@@ -56,6 +57,7 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role;
         token.id = user.id;
         token.balance = (user as any).balance;
+        token.totalSpent = (user as any).totalSpent || 0;
         token.name = user.name;
       }
       
@@ -71,6 +73,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.balance = token.balance as number;
+        session.user.totalSpent = token.totalSpent as number;
         session.user.name = token.name as string;
       }
       return session;
