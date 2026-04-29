@@ -115,7 +115,8 @@ export function ProductShowcase() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group relative bg-card/40 backdrop-blur-md rounded-3xl border border-white/5 hover:border-primary/50 transition-all duration-500 overflow-hidden"
+                onClick={() => router.push('/dashboard/marketplace')}
+                className="group relative bg-card/40 backdrop-blur-md rounded-3xl border border-white/5 hover:border-primary/50 transition-all duration-500 overflow-hidden cursor-pointer"
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
@@ -148,7 +149,7 @@ export function ProductShowcase() {
                       <p className="text-2xl font-black text-foreground font-mono">{formatPrice(service.finalPrice)}</p>
                     </div>
                     <button 
-                      onClick={() => router.push('/dashboard/marketplace')}
+                      onClick={(e) => { e.stopPropagation(); router.push('/dashboard/marketplace'); }}
                       className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors border border-primary/20 group-hover:border-primary"
                     >
                       <ChevronRight className="w-5 h-5" />
